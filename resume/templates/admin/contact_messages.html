@@ -1,0 +1,1297 @@
+{% extends "admin/base.html" %}
+{% load static %}
+
+{% block title %}Contact Messages | AI Resume Screening{% endblock %}
+
+{% block extra_css %}
+
+<style>
+
+:root{
+
+    --primary:#4f46e5;
+    --primary2:#6366f1;
+    --success:#16a34a;
+    --danger:#dc2626;
+    --warning:#f59e0b;
+    --info:#0ea5e9;
+
+    --dark:#111827;
+    --gray:#6b7280;
+
+    --border:#e5e7eb;
+    --bg:#f8fafc;
+
+}
+
+body{
+
+    background:var(--bg);
+
+}
+
+.page-header{
+
+    background:#fff;
+
+    border-radius:20px;
+
+    padding:28px;
+
+    margin-bottom:30px;
+
+    box-shadow:0 12px 30px rgba(0,0,0,.05);
+
+}
+
+.page-header h3{
+
+    font-weight:700;
+
+    color:var(--dark);
+
+}
+
+.page-header p{
+
+    color:var(--gray);
+
+    margin-bottom:0;
+
+}
+
+.stat-card{
+
+    background:#fff;
+
+    border:none;
+
+    border-radius:18px;
+
+    overflow:hidden;
+
+    transition:.35s;
+
+    box-shadow:0 10px 25px rgba(0,0,0,.05);
+
+}
+
+.stat-card:hover{
+
+    transform:translateY(-6px);
+
+}
+
+.stat-icon{
+
+    width:65px;
+
+    height:65px;
+
+    border-radius:16px;
+
+    display:flex;
+
+    align-items:center;
+
+    justify-content:center;
+
+    font-size:25px;
+
+    color:#fff;
+
+}
+
+.bg-indigo{
+
+    background:linear-gradient(135deg,#4f46e5,#6366f1);
+
+}
+
+.bg-success{
+
+    background:linear-gradient(135deg,#16a34a,#22c55e);
+
+}
+
+.bg-warning{
+
+    background:linear-gradient(135deg,#f59e0b,#fbbf24);
+
+}
+
+.bg-danger{
+
+    background:linear-gradient(135deg,#dc2626,#ef4444);
+
+}
+
+.stat-title{
+
+    color:var(--gray);
+
+    font-size:14px;
+
+    font-weight:600;
+
+}
+
+.stat-value{
+
+    font-size:30px;
+
+    font-weight:700;
+
+    color:var(--dark);
+
+}
+
+.main-card{
+
+    background:#fff;
+
+    border:none;
+
+    border-radius:20px;
+
+    box-shadow:0 12px 30px rgba(0,0,0,.05);
+
+}
+
+.table thead{
+
+    background:#eef2ff;
+
+}
+
+.table thead th{
+
+    border:none;
+
+    font-weight:700;
+
+    color:#111827;
+
+    padding:16px;
+
+}
+
+.table tbody td{
+
+    padding:18px 16px;
+
+    vertical-align:middle;
+
+    border-color:#eef2f7;
+
+}
+
+.table tbody tr:hover{
+
+    background:#fafbff;
+
+}
+
+.avatar{
+
+    width:48px;
+
+    height:48px;
+
+    border-radius:50%;
+
+    background:#eef2ff;
+
+    color:#4f46e5;
+
+    display:flex;
+
+    align-items:center;
+
+    justify-content:center;
+
+    font-weight:700;
+
+    font-size:18px;
+
+}
+
+.search-box{
+
+    position:relative;
+
+}
+
+.search-box input{
+
+    height:48px;
+
+    border-radius:12px;
+
+    padding-left:45px;
+
+}
+
+.search-box i{
+
+    position:absolute;
+
+    top:50%;
+
+    left:15px;
+
+    transform:translateY(-50%);
+
+    color:#6b7280;
+
+}
+
+.filter-select{
+
+    height:48px;
+
+    border-radius:12px;
+
+}
+
+.badge-read{
+
+    background:#dcfce7;
+
+    color:#15803d;
+
+    border-radius:30px;
+
+    padding:8px 14px;
+
+    font-size:12px;
+
+}
+
+.badge-unread{
+
+    background:#fee2e2;
+
+    color:#b91c1c;
+
+    border-radius:30px;
+
+    padding:8px 14px;
+
+    font-size:12px;
+
+}
+
+.btn-icon{
+
+    width:40px;
+
+    height:40px;
+
+    border:none;
+
+    border-radius:10px;
+
+    display:inline-flex;
+
+    align-items:center;
+
+    justify-content:center;
+
+}
+
+.btn-view{
+
+    background:#dbeafe;
+
+    color:#2563eb;
+
+}
+
+.btn-delete{
+
+    background:#fee2e2;
+
+    color:#dc2626;
+
+}
+
+.btn-icon:hover{
+
+    transform:scale(1.08);
+
+}
+
+.subject{
+
+    font-weight:600;
+
+    color:#374151;
+
+}
+
+.preview{
+
+    max-width:320px;
+
+    overflow:hidden;
+
+    white-space:nowrap;
+
+    text-overflow:ellipsis;
+
+    color:#6b7280;
+
+}
+
+</style>
+
+{% endblock %}
+
+{% block content %}
+
+<div class="container-fluid">
+
+<div class="page-header d-flex justify-content-between align-items-center flex-wrap">
+
+<div>
+
+<h3>
+
+<i class="bi bi-envelope-paper-fill text-primary me-2"></i>
+
+Contact Messages
+
+</h3>
+
+<p>
+
+Manage customer enquiries professionally.
+
+</p>
+
+</div>
+
+<div>
+
+<a href="" class="btn btn-primary px-4">
+
+<i class="bi bi-arrow-repeat me-2"></i>
+
+Refresh
+
+</a>
+
+</div>
+
+</div>
+
+<div class="row g-4 mb-4">
+
+<div class="col-lg-3">
+
+<div class="stat-card">
+
+<div class="card-body d-flex align-items-center">
+
+<div class="stat-icon bg-indigo me-3">
+
+<i class="bi bi-envelope-fill"></i>
+
+</div>
+
+<div>
+
+<div class="stat-title">
+
+Total Messages
+
+</div>
+
+<div class="stat-value">
+
+{{ total_messages }}
+
+</div>
+
+</div>
+
+</div>
+
+</div>
+
+</div>
+
+<div class="col-lg-3">
+
+<div class="stat-card">
+
+<div class="card-body d-flex align-items-center">
+
+<div class="stat-icon bg-success me-3">
+
+<i class="bi bi-check-circle-fill"></i>
+
+</div>
+
+<div>
+
+<div class="stat-title">
+
+Read
+
+</div>
+
+<div class="stat-value">
+
+{{ read_messages }}
+
+</div>
+
+</div>
+
+</div>
+
+</div>
+
+</div>
+
+<div class="col-lg-3">
+
+<div class="stat-card">
+
+<div class="card-body d-flex align-items-center">
+
+<div class="stat-icon bg-warning me-3">
+
+<i class="bi bi-envelope-open-fill"></i>
+
+</div>
+
+<div>
+
+<div class="stat-title">
+
+Unread
+
+</div>
+
+<div class="stat-value">
+
+{{ unread_messages }}
+
+</div>
+
+</div>
+
+</div>
+
+</div>
+
+</div>
+
+<div class="col-lg-3">
+
+<div class="stat-card">
+
+<div class="card-body d-flex align-items-center">
+
+<div class="stat-icon bg-danger me-3">
+
+<i class="bi bi-trash-fill"></i>
+
+</div>
+
+<div>
+
+<div class="stat-title">
+
+Deleted
+
+</div>
+
+<div class="stat-value">
+
+{{ deleted_messages }}
+
+</div>
+
+</div>
+
+</div>
+
+</div>
+
+</div>
+
+</div>
+
+<div class="card main-card">
+
+<div class="card-header bg-white border-0 py-4">
+
+<div class="row g-3">
+
+<div class="col-lg-5">
+
+<form method="GET">
+
+<div class="search-box">
+
+<i class="bi bi-search"></i>
+
+<input
+
+type="text"
+
+name="search"
+
+class="form-control"
+
+placeholder="Search name, email, subject..."
+
+value="{{ search }}">
+
+</div>
+
+</div>
+
+<div class="col-lg-3">
+
+<select
+
+name="status"
+
+class="form-select filter-select">
+
+<option value="">All Status</option>
+
+<option value="read"
+
+{% if status == "read" %}selected{% endif %}>
+
+Read
+
+</option>
+
+<option value="unread"
+
+{% if status == "unread" %}selected{% endif %}>
+
+Unread
+
+</option>
+
+</select>
+
+</div>
+
+<div class="col-lg-2 d-grid">
+
+<button class="btn btn-primary">
+
+<i class="bi bi-search me-2"></i>
+
+Search
+
+</button>
+
+</div>
+
+<div class="col-lg-2 d-grid">
+
+<a href="{% url 'contact_messages' %}"
+
+class="btn btn-outline-secondary">
+
+Reset
+
+</a>
+
+</div>
+
+</form>
+
+</div>
+
+</div>
+
+<div class="table-responsive">
+
+<table class="table align-middle mb-0">
+
+<thead>
+
+<tr>
+
+<th>#</th>
+
+<th>User</th>
+
+<th>Email</th>
+
+<th>Subject</th>
+
+<th>Message</th>
+
+<th>Date</th>
+
+<th>Status</th>
+
+<th class="text-center">
+
+Action
+
+</th>
+
+</tr>
+
+</thead>
+
+<tbody>
+
+{% for message in page_obj %}
+<tr>
+
+<td>{{ page_obj.start_index|add:forloop.counter0 }}</td>
+
+<td>
+
+<div class="d-flex align-items-center">
+
+<div class="avatar me-3">
+
+{{ message.name|slice:":1"|upper }}
+
+</div>
+
+<div>
+
+<div class="fw-bold">
+
+{{ message.name }}
+
+</div>
+
+<small class="text-muted">
+
+{{ message.user.fullname }}
+
+</small>
+
+</div>
+
+</div>
+
+</td>
+
+<td>
+
+{{ message.email }}
+
+</td>
+
+<td>
+
+<div class="subject">
+
+{{ message.subject }}
+
+</div>
+
+</td>
+
+<td>
+
+<div class="preview">
+
+{{ message.message }}
+
+</div>
+
+</td>
+
+<td>
+
+{{ message.created_at|date:"d M Y h:i A" }}
+
+</td>
+
+<td>
+
+{% if message.is_read %}
+
+<span class="badge-read">
+
+<i class="bi bi-check-circle-fill me-1"></i>
+
+Read
+
+</span>
+
+{% else %}
+
+<span class="badge-unread">
+
+<i class="bi bi-envelope-fill me-1"></i>
+
+Unread
+
+</span>
+
+{% endif %}
+
+</td>
+
+<td class="text-center">
+
+<button
+
+class="btn-icon btn-view"
+
+data-bs-toggle="modal"
+
+data-bs-target="#viewMessage{{ message.id }}">
+
+<i class="bi bi-eye-fill"></i>
+
+</button>
+
+<a
+
+href="{% url 'delete_message' message.id %}"
+
+class="btn-icon btn-delete"
+
+onclick="return confirm('Delete this message?')">
+
+<i class="bi bi-trash-fill"></i>
+
+</a>
+
+</td>
+
+</tr>
+
+<!-- View Modal -->
+
+<div
+
+class="modal fade"
+
+id="viewMessage{{ message.id }}"
+
+tabindex="-1">
+
+<div class="modal-dialog modal-lg modal-dialog-centered">
+
+<div class="modal-content border-0 rounded-4 shadow">
+
+<div class="modal-header">
+
+<h5 class="modal-title">
+
+<i class="bi bi-envelope-open-fill text-primary me-2"></i>
+
+Message Details
+
+</h5>
+
+<button
+
+type="button"
+
+class="btn-close"
+
+data-bs-dismiss="modal">
+
+</button>
+
+</div>
+
+<div class="modal-body">
+
+<div class="row g-4">
+
+<div class="col-md-6">
+
+<label class="fw-bold mb-2">
+
+Sender
+
+</label>
+
+<div class="border rounded-3 p-3">
+
+{{ message.name }}
+
+</div>
+
+</div>
+
+<div class="col-md-6">
+
+<label class="fw-bold mb-2">
+
+Email
+
+</label>
+
+<div class="border rounded-3 p-3">
+
+{{ message.email }}
+
+</div>
+
+</div>
+
+<div class="col-12">
+
+<label class="fw-bold mb-2">
+
+Subject
+
+</label>
+
+<div class="border rounded-3 p-3">
+
+{{ message.subject }}
+
+</div>
+
+</div>
+
+<div class="col-12">
+
+<label class="fw-bold mb-2">
+
+Message
+
+</label>
+
+<div
+
+class="border rounded-3 p-3"
+
+style="min-height:220px;white-space:pre-wrap;">
+
+{{ message.message }}
+
+</div>
+
+</div>
+
+<div class="col-md-6">
+
+<label class="fw-bold mb-2">
+
+Received
+
+</label>
+
+<div class="border rounded-3 p-3">
+
+{{ message.created_at|date:"d M Y h:i A" }}
+
+</div>
+
+</div>
+
+<div class="col-md-6">
+
+<label class="fw-bold mb-2">
+
+Status
+
+</label>
+
+<div class="border rounded-3 p-3">
+
+{% if message.is_read %}
+
+<span class="badge bg-success">
+
+Read
+
+</span>
+
+{% else %}
+
+<span class="badge bg-danger">
+
+Unread
+
+</span>
+
+{% endif %}
+
+</div>
+
+</div>
+
+</div>
+
+</div>
+
+<div class="modal-footer">
+
+<button
+
+class="btn btn-secondary"
+
+data-bs-dismiss="modal">
+
+Close
+
+</button>
+
+</div>
+
+</div>
+
+</div>
+
+</div>
+
+{% empty %}
+
+<tr>
+
+<td colspan="8" class="text-center py-5">
+
+<i
+
+class="bi bi-inbox"
+
+style="font-size:70px;color:#cbd5e1;">
+
+</i>
+
+<h4 class="mt-3">
+
+No Messages Found
+
+</h4>
+
+<p class="text-muted">
+
+No contact messages available.
+
+</p>
+
+</td>
+
+</tr>
+
+{% endfor %}
+
+</tbody>
+
+</table>
+
+</div>
+<div class="card-footer bg-white border-0 py-4">
+
+<div class="row align-items-center">
+
+<div class="col-md-6">
+
+<small class="text-muted">
+
+Showing
+
+<strong>
+
+{{ page_obj.start_index }}
+
+</strong>
+
+to
+
+<strong>
+
+{{ page_obj.end_index }}
+
+</strong>
+
+of
+
+<strong>
+
+{{ page_obj.paginator.count }}
+
+</strong>
+
+messages
+
+</small>
+
+</div>
+
+<div class="col-md-6">
+
+<nav class="float-md-end">
+
+<ul class="pagination mb-0">
+
+{% if page_obj.has_previous %}
+
+<li class="page-item">
+
+<a
+
+class="page-link"
+
+href="?page=1&search={{ search }}&status={{ status }}">
+
+First
+
+</a>
+
+</li>
+
+<li class="page-item">
+
+<a
+
+class="page-link"
+
+href="?page={{ page_obj.previous_page_number }}&search={{ search }}&status={{ status }}">
+
+<i class="bi bi-chevron-left"></i>
+
+</a>
+
+</li>
+
+{% endif %}
+
+{% for num in page_obj.paginator.page_range %}
+
+{% if page_obj.number == num %}
+
+<li class="page-item active">
+
+<span class="page-link">
+
+{{ num }}
+
+</span>
+
+</li>
+
+{% elif num >= page_obj.number|add:-2 and num <= page_obj.number|add:2 %}
+
+<li class="page-item">
+
+<a
+
+class="page-link"
+
+href="?page={{ num }}&search={{ search }}&status={{ status }}">
+
+{{ num }}
+
+</a>
+
+</li>
+
+{% endif %}
+
+{% endfor %}
+
+{% if page_obj.has_next %}
+
+<li class="page-item">
+
+<a
+
+class="page-link"
+
+href="?page={{ page_obj.next_page_number }}&search={{ search }}&status={{ status }}">
+
+<i class="bi bi-chevron-right"></i>
+
+</a>
+
+</li>
+
+<li class="page-item">
+
+<a
+
+class="page-link"
+
+href="?page={{ page_obj.paginator.num_pages }}&search={{ search }}&status={{ status }}">
+
+Last
+
+</a>
+
+</li>
+
+{% endif %}
+
+</ul>
+
+</nav>
+
+</div>
+
+</div>
+
+</div>
+
+</div>
+
+<div class="row mt-4 g-4">
+
+<div class="col-lg-4">
+
+<div class="card main-card h-100">
+
+<div class="card-body text-center">
+
+<i
+
+class="bi bi-envelope-heart-fill text-primary"
+
+style="font-size:55px;">
+
+</i>
+
+<h5 class="fw-bold mt-3">
+
+Customer Support
+
+</h5>
+
+<p class="text-muted">
+
+Monitor customer enquiries quickly and efficiently.
+
+</p>
+
+</div>
+
+</div>
+
+</div>
+
+<div class="col-lg-4">
+
+<div class="card main-card h-100">
+
+<div class="card-body text-center">
+
+<i
+
+class="bi bi-lightning-charge-fill text-warning"
+
+style="font-size:55px;">
+
+</i>
+
+<h5 class="fw-bold mt-3">
+
+Quick Actions
+
+</h5>
+
+<div class="d-grid gap-2 mt-4">
+
+<a
+
+href="{% url 'contact_messages' %}"
+
+class="btn btn-outline-primary">
+
+<i class="bi bi-arrow-repeat me-2"></i>
+
+Refresh
+
+</a>
+
+<a
+
+href="{% url 'admin_dashboard' %}"
+
+class="btn btn-outline-success">
+
+<i class="bi bi-speedometer2 me-2"></i>
+
+Dashboard
+
+</a>
+
+</div>
+
+</div>
+
+</div>
+
+</div>
+
+<div class="col-lg-4">
+
+<div class="card main-card h-100">
+
+<div class="card-body text-center">
+
+<i
+
+class="bi bi-shield-check text-success"
+
+style="font-size:55px;">
+
+</i>
+
+<h5 class="fw-bold mt-3">
+
+Admin Panel
+
+</h5>
+
+<p class="text-muted">
+
+Securely manage contact messages from the administration panel.
+
+</p>
+
+<span class="badge bg-primary px-3 py-2">
+
+AI Resume Screening
+
+</span>
+
+</div>
+
+</div>
+
+</div>
+
+</div>
+
+</div>
+
+{% endblock %}
+
+{% block extra_js %}
+
+<script>
+
+document.addEventListener("DOMContentLoaded",function(){
+
+const tooltipTriggerList=[].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
+
+tooltipTriggerList.map(function(el){
+
+return new bootstrap.Tooltip(el);
+
+});
+
+});
+
+</script>
+
+{% endblock %}

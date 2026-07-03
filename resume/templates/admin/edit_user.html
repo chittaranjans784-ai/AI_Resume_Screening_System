@@ -1,0 +1,371 @@
+{% extends "admin/base.html" %}
+{% load static %}
+
+{% block title %}
+Edit User | AI Resume Screening
+{% endblock %}
+
+{% block page_title %}
+Edit User
+{% endblock %}
+
+{% block content %}
+
+<div class="container-fluid">
+
+    <!-- Header -->
+
+    <div class="row mb-4">
+
+        <div class="col-lg-8">
+
+            <h2 class="fw-bold">
+
+                <i class="bi bi-pencil-square text-primary"></i>
+
+                Edit User
+
+            </h2>
+
+            <p class="text-muted mb-0">
+
+                Update user information and account details.
+
+            </p>
+
+        </div>
+
+        <div class="col-lg-4 text-lg-end mt-3 mt-lg-0">
+
+            <a href="{% url 'manage_users' %}"
+               class="btn btn-outline-primary">
+
+                <i class="bi bi-arrow-left-circle"></i>
+
+                Back to Users
+
+            </a>
+
+        </div>
+
+    </div>
+
+    <form method="POST"
+          enctype="multipart/form-data">
+
+        {% csrf_token %}
+
+        <div class="row g-4">
+
+            <!-- Left Card -->
+
+            <div class="col-xl-4">
+
+                <div class="card border-0 shadow rounded-4">
+
+                    <div class="card-body text-center p-5">
+
+                        {% if user.profile_photo %}
+
+                        <img src="{{ user.profile_photo.url }}"
+                             id="previewImage"
+                             class="rounded-circle shadow mb-4"
+                             width="170"
+                             height="170"
+                             style="object-fit:cover;">
+
+                        {% else %}
+
+                        <img src="{% static 'images/default.png' %}"
+                             id="previewImage"
+                             class="rounded-circle shadow mb-4"
+                             width="170"
+                             height="170"
+                             style="object-fit:cover;">
+
+                        {% endif %}
+
+                        <h4 class="fw-bold">
+
+                            {{ user.fullname }}
+
+                        </h4>
+
+                        <p class="text-muted">
+
+                            {{ user.email }}
+
+                        </p>
+
+                        <div class="mt-4">
+
+                            <label class="form-label fw-semibold">
+
+                                Change Profile Photo
+
+                            </label>
+
+                            <input type="file"
+                                   name="profile_photo"
+                                   class="form-control"
+                                   accept="image/*"
+                                   onchange="previewPhoto(event)">
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+            <!-- Right Card -->
+
+            <div class="col-xl-8">
+
+                <div class="card border-0 shadow rounded-4">
+
+                    <div class="card-header bg-white py-3">
+
+                        <h5 class="fw-bold mb-0">
+
+                            <i class="bi bi-person-lines-fill"></i>
+
+                            User Information
+
+                        </h5>
+
+                    </div>
+
+                    <div class="card-body">
+
+                        <div class="row g-4">
+
+                            <div class="col-md-6">
+
+                                <label class="form-label fw-semibold">
+
+                                    Full Name
+
+                                </label>
+
+                                <input type="text"
+                                       class="form-control"
+                                       name="fullname"
+                                       value="{{ user.fullname }}"
+                                       required>
+
+                            </div>
+
+                            <div class="col-md-6">
+
+                                <label class="form-label fw-semibold">
+
+                                    Email Address
+
+                                </label>
+
+                                <input type="email"
+                                       class="form-control"
+                                       name="email"
+                                       value="{{ user.email }}"
+                                       required>
+
+                            </div>
+
+                            <div class="col-md-6">
+
+                                <label class="form-label fw-semibold">
+
+                                    User ID
+
+                                </label>
+
+                                <input type="text"
+                                       class="form-control"
+                                       value="{{ user.id }}"
+                                       readonly>
+
+                            </div>
+
+                            <div class="col-md-6">
+
+                                <label class="form-label fw-semibold">
+
+                                    Total Resume
+
+                                </label>
+
+                                <input type="text"
+                                       class="form-control"
+                                       value="{{ user.resume_set.count }}"
+                                       readonly>
+
+                            </div>
+
+                            <div class="col-md-6">
+
+                                <label class="form-label fw-semibold">
+
+                                    Account Role
+
+                                </label>
+
+                                <div class="form-check form-switch mt-2">
+
+                                    <input class="form-check-input"
+                                           type="checkbox"
+                                           id="adminCheck"
+                                           name="is_admin"
+                                           {% if user.is_admin %}checked{% endif %}>
+
+                                    <label class="form-check-label"
+                                           for="adminCheck">
+
+                                        Make this user Admin
+
+                                    </label>
+
+                                </div>
+
+                            </div>
+
+                            <div class="col-md-6">
+
+                                <label class="form-label fw-semibold">
+
+                                    Joined On
+
+                                </label>
+
+                                <input type="text"
+                                        class="form-control"
+                                        value="{% if user.created_at %}{{ user.created_at|date:'d M Y, h:i A' }}{% else %}Not Available{% endif %}"
+                                        readonly>
+
+                            </div>
+
+                            <div class="col-12">
+
+                                <hr>
+
+                            </div>
+
+                            <div class="col-12 d-flex flex-wrap gap-3">
+                                                                <button type="submit"
+                                        class="btn btn-primary px-4">
+
+                                    <i class="bi bi-check-circle-fill"></i>
+
+                                    Update User
+
+                                </button>
+
+                                <a href="{% url 'view_user' user.id %}"
+                                   class="btn btn-outline-success px-4">
+
+                                    <i class="bi bi-eye-fill"></i>
+
+                                    View Profile
+
+                                </a>
+
+                                <a href="{% url 'manage_users' %}"
+                                   class="btn btn-outline-secondary px-4">
+
+                                    <i class="bi bi-arrow-left-circle"></i>
+
+                                    Cancel
+
+                                </a>
+
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </form>
+
+</div>
+
+<style>
+
+.card{
+    border-radius:20px;
+}
+
+.card-header{
+    border-radius:20px 20px 0 0 !important;
+}
+
+.form-control{
+    border-radius:12px;
+    min-height:50px;
+}
+
+.form-check-input{
+    width:3rem;
+    height:1.5rem;
+}
+
+img{
+    border:5px solid #fff;
+    transition:.3s;
+}
+
+.btn{
+    border-radius:10px;
+}
+
+@media(max-width:992px){
+
+    .card-body{
+        padding:2rem;
+    }
+
+}
+
+@media(max-width:768px){
+
+    .card-body{
+        padding:1.5rem;
+    }
+
+    img{
+        width:130px;
+        height:130px;
+    }
+
+    .btn{
+        width:100%;
+    }
+
+}
+
+</style>
+
+<script>
+
+function previewPhoto(event){
+
+    const file = event.target.files[0];
+
+    if(file){
+
+        document.getElementById("previewImage").src =
+        URL.createObjectURL(file);
+
+    }
+
+}
+
+</script>
+
+{% endblock %}

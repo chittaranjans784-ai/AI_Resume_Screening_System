@@ -1,0 +1,239 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>404 - Page Not Found</title>
+
+    <!-- Bootstrap -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+
+    <!-- Bootstrap Icons -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
+
+    <!-- Google Font -->
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+    <style>
+
+        *{
+            margin:0;
+            padding:0;
+            box-sizing:border-box;
+            font-family:'Poppins',sans-serif;
+        }
+
+        body{
+            min-height:100vh;
+            display:flex;
+            justify-content:center;
+            align-items:center;
+            background:linear-gradient(135deg,#2563eb,#0f172a);
+            overflow:hidden;
+        }
+
+        .bg-circle{
+            position:absolute;
+            border-radius:50%;
+            background:rgba(255,255,255,.08);
+            animation:float 10s infinite ease-in-out;
+        }
+
+        .c1{
+            width:280px;
+            height:280px;
+            top:-80px;
+            left:-80px;
+        }
+
+        .c2{
+            width:220px;
+            height:220px;
+            bottom:-60px;
+            right:-60px;
+            animation-delay:2s;
+        }
+
+        .c3{
+            width:160px;
+            height:160px;
+            top:20%;
+            right:15%;
+            animation-delay:4s;
+        }
+
+        @keyframes float{
+
+            0%{
+                transform:translateY(0px);
+            }
+
+            50%{
+                transform:translateY(-25px);
+            }
+
+            100%{
+                transform:translateY(0px);
+            }
+
+        }
+
+        .error-card{
+
+            width:700px;
+            max-width:92%;
+            background:rgba(255,255,255,.12);
+            backdrop-filter:blur(18px);
+            border:1px solid rgba(255,255,255,.2);
+            border-radius:30px;
+            padding:60px;
+            text-align:center;
+            color:#fff;
+            box-shadow:0 25px 60px rgba(0,0,0,.25);
+
+        }
+
+        .error-icon{
+
+            width:130px;
+            height:130px;
+            margin:auto;
+            border-radius:50%;
+            background:#fff;
+            color:#2563eb;
+            display:flex;
+            align-items:center;
+            justify-content:center;
+            font-size:65px;
+            margin-bottom:30px;
+
+        }
+
+        h1{
+
+            font-size:110px;
+            font-weight:700;
+            margin-bottom:10px;
+
+        }
+
+        h3{
+
+            font-weight:600;
+            margin-bottom:18px;
+
+        }
+
+        p{
+
+            color:#e2e8f0;
+            margin-bottom:35px;
+
+        }
+
+        .btn-home{
+
+            background:#fff;
+            color:#2563eb;
+            border:none;
+            padding:14px 34px;
+            border-radius:50px;
+            font-weight:600;
+            transition:.3s;
+
+        }
+
+        .btn-home:hover{
+
+            background:#2563eb;
+            color:#fff;
+
+        }
+
+        .btn-back{
+
+            border:2px solid #fff;
+            color:#fff;
+            padding:14px 34px;
+            border-radius:50px;
+            font-weight:600;
+            margin-left:10px;
+            transition:.3s;
+
+        }
+
+        .btn-back:hover{
+
+            background:#fff;
+            color:#2563eb;
+
+        }
+
+        @media(max-width:768px){
+
+            .error-card{
+
+                padding:35px 25px;
+
+            }
+
+            h1{
+
+                font-size:70px;
+
+            }
+
+            .btn-home,
+            .btn-back{
+
+                width:100%;
+                margin:8px 0;
+
+            }
+
+        }
+
+    </style>
+
+</head>
+
+<body>
+
+<div class="bg-circle c1"></div>
+<div class="bg-circle c2"></div>
+<div class="bg-circle c3"></div>
+
+<div class="error-card">
+
+    <div class="error-icon">
+        <i class="bi bi-search"></i>
+    </div>
+
+    <h1>404</h1>
+
+    <h3>Page Not Found</h3>
+
+    <p>
+        Sorry, the page you are looking for doesn't exist,
+        has been removed, or the URL is incorrect.
+    </p>
+
+    <a href="{% url 'home' %}" class="btn btn-home">
+        <i class="bi bi-house-door-fill"></i>
+        Home
+    </a>
+
+    <button onclick="history.back()" class="btn btn-back">
+        <i class="bi bi-arrow-left-circle"></i>
+        Go Back
+    </button>
+
+</div>
+
+</body>
+
+</html>

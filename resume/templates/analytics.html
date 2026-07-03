@@ -1,0 +1,929 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+<meta charset="UTF-8">
+
+<meta name="viewport"
+content="width=device-width, initial-scale=1.0">
+
+<title>Analytics | AI Resume Screening</title>
+
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
+rel="stylesheet">
+
+<link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css"
+rel="stylesheet">
+
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap"
+rel="stylesheet">
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<style>
+
+*{
+margin:0;
+padding:0;
+box-sizing:border-box;
+font-family:'Poppins',sans-serif;
+}
+
+body{
+
+background:#eef2ff;
+
+}
+
+.sidebar{
+
+position:fixed;
+left:0;
+top:0;
+width:260px;
+height:100vh;
+background:linear-gradient(180deg,#4f46e5,#312e81);
+padding:25px;
+overflow-y:auto;
+
+}
+
+.logo{
+
+font-size:28px;
+font-weight:700;
+color:#fff;
+margin-bottom:40px;
+
+}
+
+.logo span{
+
+color:#facc15;
+
+}
+
+.sidebar a{
+
+display:block;
+padding:14px 18px;
+border-radius:14px;
+text-decoration:none;
+color:#fff;
+margin-bottom:10px;
+transition:.3s;
+
+}
+
+.sidebar a:hover,
+.sidebar a.active{
+
+background:#fff;
+color:#312e81;
+
+}
+
+.sidebar i{
+
+margin-right:10px;
+
+}
+
+.main{
+
+margin-left:260px;
+padding:35px;
+
+}
+
+.topbar{
+
+background:#fff;
+padding:20px 30px;
+border-radius:18px;
+display:flex;
+justify-content:space-between;
+align-items:center;
+box-shadow:0 10px 25px rgba(0,0,0,.08);
+margin-bottom:30px;
+
+}
+
+.user-box{
+
+display:flex;
+align-items:center;
+gap:15px;
+
+}
+
+.user-box img{
+
+width:55px;
+height:55px;
+border-radius:50%;
+object-fit:cover;
+
+}
+
+.user-box h6{
+
+margin:0;
+font-weight:600;
+
+}
+
+.user-box small{
+
+color:#6b7280;
+
+}
+
+.analytics-banner{
+
+background:linear-gradient(135deg,#4f46e5,#6366f1);
+padding:35px;
+border-radius:22px;
+color:#fff;
+margin-bottom:30px;
+
+}
+
+.analytics-banner h2{
+
+font-weight:700;
+margin-bottom:10px;
+
+}
+
+.analytics-banner p{
+
+margin:0;
+opacity:.9;
+
+}
+
+.card-box{
+
+background:#fff;
+padding:25px;
+border-radius:20px;
+box-shadow:0 10px 25px rgba(0,0,0,.08);
+margin-bottom:25px;
+transition:.3s;
+
+}
+
+.card-box:hover{
+
+transform:translateY(-5px);
+
+}
+
+.card-box i{
+
+font-size:38px;
+margin-bottom:15px;
+
+}
+
+.card-box h2{
+
+font-weight:700;
+
+}
+
+.card-box p{
+
+margin:0;
+color:#64748b;
+
+}
+
+@media(max-width:992px){
+
+.sidebar{
+
+display:none;
+
+}
+
+.main{
+
+margin-left:0;
+
+}
+
+.topbar{
+
+flex-direction:column;
+align-items:flex-start;
+gap:20px;
+
+}
+
+}
+
+</style>
+
+</head>
+
+<body>
+
+<div class="sidebar">
+
+<div class="logo">
+
+AI <span>Resume</span>
+
+</div>
+
+<a href="{% url 'dashboard' %}">
+
+<i class="bi bi-speedometer2"></i>
+
+Dashboard
+
+</a>
+
+<a href="{% url 'upload_resume' %}">
+
+<i class="bi bi-upload"></i>
+
+Upload Resume
+
+</a>
+
+<a href="{% url 'history' %}">
+
+<i class="bi bi-clock-history"></i>
+
+Resume History
+
+</a>
+
+<a href="{% url 'analytics' %}"
+class="active">
+
+<i class="bi bi-bar-chart-fill"></i>
+
+Analytics
+
+</a>
+
+<a href="{% url 'profile' %}">
+
+<i class="bi bi-person-circle"></i>
+
+Profile
+
+</a>
+
+<a href="{% url 'contact' %}">
+
+<i class="bi bi-envelope-fill"></i>
+
+Contact
+
+</a>
+
+<a href="{% url 'logout' %}">
+
+<i class="bi bi-box-arrow-right"></i>
+
+Logout
+
+</a>
+
+</div>
+
+<div class="main">
+
+<div class="topbar">
+
+<div>
+
+<h3 class="fw-bold">
+
+Analytics Dashboard
+
+</h3>
+
+<small class="text-muted">
+
+Resume Performance Insights
+
+</small>
+
+</div>
+
+<div class="user-box">
+
+<img src="{{ user.profile_photo.url }}" alt="Profile">
+
+<div>
+
+<h6>
+
+{{ user.fullname }}
+
+</h6>
+
+<small>
+
+{{ user.email }}
+
+</small>
+
+</div>
+
+</div>
+
+</div>
+
+<div class="analytics-banner">
+
+<h2>
+
+<i class="bi bi-graph-up-arrow"></i>
+
+Resume Analytics
+
+</h2>
+
+<p>
+
+Track your ATS performance, resume quality and AI insights from one professional dashboard.
+
+</p>
+
+</div>
+
+<div class="row">
+
+<div class="col-lg-3 col-md-6">
+
+<div class="card-box text-center">
+
+<i class="bi bi-file-earmark-text-fill text-primary"></i>
+
+<h2>
+
+{{ total_resume }}
+
+</h2>
+
+<p>
+
+Total Resume
+
+</p>
+
+</div>
+
+</div>
+
+<div class="col-lg-3 col-md-6">
+
+<div class="card-box text-center">
+
+<i class="bi bi-award-fill text-success"></i>
+
+<h2>
+
+{{ highest_score }}%
+
+</h2>
+
+<p>
+
+Highest ATS
+
+</p>
+
+</div>
+
+</div>
+
+<div class="col-lg-3 col-md-6">
+
+<div class="card-box text-center">
+
+<i class="bi bi-bar-chart-fill text-warning"></i>
+
+<h2>
+
+{{ average_score }}%
+
+</h2>
+
+<p>
+
+Average ATS
+
+</p>
+
+</div>
+
+</div>
+
+<div class="col-lg-3 col-md-6">
+
+<div class="card-box text-center">
+
+<i class="bi bi-stars text-danger"></i>
+
+<h2>
+
+{{ ai_rating }}
+
+</h2>
+
+<p>
+
+AI Rating
+
+</p>
+
+</div>
+
+</div>
+
+</div>
+<div class="row">
+
+<div class="col-lg-8">
+
+<div class="card-box">
+
+<h4 class="fw-bold mb-4">
+
+<i class="bi bi-speedometer2 text-primary"></i>
+
+ATS Performance Overview
+
+</h4>
+
+<div class="progress mb-4"
+style="height:28px;border-radius:30px;">
+
+<div
+class="progress-bar bg-success fw-bold"
+role="progressbar"
+style="width:{{ average_score }}%;">
+
+{{ average_score }}%
+
+</div>
+
+</div>
+
+<table class="table table-bordered align-middle">
+
+<tr>
+
+<th width="40%">
+
+Total Resume
+
+</th>
+
+<td>
+
+{{ total_resume }}
+
+</td>
+
+</tr>
+
+<tr>
+
+<th>
+
+Highest ATS Score
+
+</th>
+
+<td>
+
+{{ highest_score }}%
+
+</td>
+
+</tr>
+
+<tr>
+
+<th>
+
+Average ATS Score
+
+</th>
+
+<td>
+
+{{ average_score }}%
+
+</td>
+
+</tr>
+
+<tr>
+
+<th>
+
+AI Rating
+
+</th>
+
+<td>
+
+{{ ai_rating }}
+
+</td>
+
+</tr>
+
+</table>
+
+</div>
+
+</div>
+
+<div class="col-lg-4">
+
+<div class="card-box">
+
+<h4 class="fw-bold mb-4">
+
+<i class="bi bi-lightning-charge-fill text-warning"></i>
+
+Performance Level
+
+</h4>
+
+{% if average_score >= 80 %}
+
+<div class="alert alert-success">
+
+<h5>
+
+🚀 Excellent
+
+</h5>
+
+<p class="mb-0">
+
+Your resume is highly ATS friendly and ready for most job applications.
+
+</p>
+
+</div>
+
+{% elif average_score >= 60 %}
+
+<div class="alert alert-primary">
+
+<h5>
+
+👍 Good
+
+</h5>
+
+<p class="mb-0">
+
+Your resume is good. Improve keywords and projects for a better score.
+
+</p>
+
+</div>
+
+{% elif average_score >= 40 %}
+
+<div class="alert alert-warning">
+
+<h5>
+
+⚠ Average
+
+</h5>
+
+<p class="mb-0">
+
+Add more technical skills, projects and certifications.
+
+</p>
+
+</div>
+
+{% else %}
+
+<div class="alert alert-danger">
+
+<h5>
+
+❌ Needs Improvement
+
+</h5>
+
+<p class="mb-0">
+
+Your resume requires major improvements before applying.
+
+</p>
+
+</div>
+
+{% endif %}
+
+<hr>
+
+<h6 class="mb-3">
+
+Highest Score Progress
+
+</h6>
+
+<div class="progress mb-4"
+style="height:22px;">
+
+<div
+class="progress-bar bg-primary"
+style="width:{{ highest_score }}%;">
+
+{{ highest_score }}%
+
+</div>
+
+</div>
+
+<h6 class="mb-3">
+
+Average Score Progress
+
+</h6>
+
+<div class="progress"
+style="height:22px;">
+
+<div
+class="progress-bar bg-success"
+style="width:{{ average_score }}%;">
+
+{{ average_score }}%
+
+</div>
+
+</div>
+
+</div>
+
+</div>
+
+</div>
+
+<div class="card-box">
+
+<h4 class="fw-bold mb-4">
+
+<i class="bi bi-pie-chart-fill text-danger"></i>
+
+Resume Performance Chart
+
+</h4>
+
+<canvas id="analyticsChart"
+height="90">
+
+</canvas>
+
+</div>
+
+<div class="card-box">
+
+<h4 class="fw-bold mb-4">
+
+<i class="bi bi-stars text-warning"></i>
+
+AI Recommendation
+
+</h4>
+
+{% if average_score >= 80 %}
+
+<div class="alert alert-success">
+
+Your resume is well optimized for ATS.
+
+Continue applying confidently and keep updating your latest achievements.
+
+</div>
+
+{% elif average_score >= 60 %}
+
+<div class="alert alert-info">
+
+Your resume performs well.
+
+Adding measurable achievements, certifications and advanced projects can further improve your ATS score.
+
+</div>
+
+{% elif average_score >= 40 %}
+
+<div class="alert alert-warning">
+
+Improve your resume by adding more relevant skills, keywords, internships and certifications.
+
+</div>
+
+{% else %}
+
+<div class="alert alert-danger">
+
+Your resume needs significant improvement.
+
+Rewrite your resume with ATS-friendly formatting and include more job-relevant keywords.
+
+</div>
+
+{% endif %}
+
+</div>
+<!-- Quick Navigation -->
+
+<div class="row">
+
+<div class="col-lg-12">
+
+<div class="card-box">
+
+<div class="d-flex flex-wrap justify-content-between align-items-center">
+
+<div>
+
+<h4 class="fw-bold mb-2">
+
+Quick Navigation
+
+</h4>
+
+<p class="text-muted mb-0">
+
+Access all important modules from one place.
+
+</p>
+
+</div>
+
+<div class="mt-3 mt-lg-0">
+
+<a href="{% url 'dashboard' %}"
+class="btn btn-primary me-2 mb-2">
+
+<i class="bi bi-speedometer2"></i>
+
+Dashboard
+
+</a>
+
+<a href="{% url 'upload_resume' %}"
+class="btn btn-success me-2 mb-2">
+
+<i class="bi bi-upload"></i>
+
+Upload Resume
+
+</a>
+
+<a href="{% url 'history' %}"
+class="btn btn-warning me-2 mb-2">
+
+<i class="bi bi-clock-history"></i>
+
+History
+
+</a>
+
+<a href="{% url 'profile' %}"
+class="btn btn-info text-white me-2 mb-2">
+
+<i class="bi bi-person-circle"></i>
+
+Profile
+
+</a>
+
+<a href="{% url 'logout' %}"
+class="btn btn-danger mb-2">
+
+<i class="bi bi-box-arrow-right"></i>
+
+Logout
+
+</a>
+
+</div>
+
+</div>
+
+</div>
+
+</div>
+
+</div>
+
+<!-- Footer -->
+
+<footer class="text-center mt-4 mb-3">
+
+<hr>
+
+<p class="text-muted">
+
+© 2026 AI Resume Screening System |
+Powered by Django, Bootstrap 5 & Artificial Intelligence
+
+</p>
+
+</footer>
+
+</div>
+
+<script>
+
+const ctx=document.getElementById("analyticsChart");
+
+if(ctx){
+
+new Chart(ctx,{
+
+type:"bar",
+
+data:{
+
+labels:[
+
+"Highest ATS",
+
+"Average ATS"
+
+],
+
+datasets:[{
+
+label:"ATS Score",
+
+data:[
+
+{{ highest_score }},
+
+{{ average_score }}
+
+],
+
+borderWidth:2
+
+}]
+
+},
+
+options:{
+
+responsive:true,
+
+plugins:{
+
+legend:{
+
+display:true
+
+}
+
+},
+
+scales:{
+
+y:{
+
+beginAtZero:true,
+
+max:100
+
+}
+
+}
+
+}
+
+});
+
+}
+
+</script>
+
+</body>
+
+</html>

@@ -1,0 +1,780 @@
+{% extends "admin/base.html" %} {% load static %} {% block title %} Admin
+Analytics {% endblock %} {% block extra_css %}
+
+<style>
+  :root {
+    --primary: #4f46e5;
+    --success: #16a34a;
+    --warning: #f59e0b;
+    --danger: #dc2626;
+    --info: #0ea5e9;
+    --dark: #111827;
+    --gray: #6b7280;
+    --border: #e5e7eb;
+    --bg: #f8fafc;
+  }
+
+  body {
+    background: var(--bg);
+  }
+
+  .page-header {
+    background: #fff;
+
+    border-radius: 20px;
+
+    padding: 30px;
+
+    margin-bottom: 30px;
+
+    box-shadow: 0 12px 25px rgba(0, 0, 0, 0.05);
+  }
+
+  .page-header h3 {
+    font-weight: 700;
+
+    color: var(--dark);
+
+    margin-bottom: 5px;
+  }
+
+  .page-header p {
+    color: var(--gray);
+
+    margin: 0;
+  }
+
+  .stats-card {
+    background: #fff;
+
+    border: none;
+
+    border-radius: 20px;
+
+    overflow: hidden;
+
+    transition: 0.35s;
+
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.05);
+  }
+
+  .stats-card:hover {
+    transform: translateY(-6px);
+  }
+
+  .stats-icon {
+    width: 68px;
+
+    height: 68px;
+
+    border-radius: 18px;
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    font-size: 28px;
+
+    color: #fff;
+  }
+
+  .bg-indigo {
+    background: linear-gradient(135deg, #4f46e5, #6366f1);
+  }
+
+  .bg-success {
+    background: linear-gradient(135deg, #16a34a, #22c55e);
+  }
+
+  .bg-warning {
+    background: linear-gradient(135deg, #f59e0b, #fbbf24);
+  }
+
+  .bg-danger {
+    background: linear-gradient(135deg, #dc2626, #ef4444);
+  }
+
+  .stat-title {
+    font-size: 14px;
+
+    font-weight: 600;
+
+    color: #6b7280;
+  }
+
+  .stat-value {
+    font-size: 30px;
+
+    font-weight: 700;
+
+    color: #111827;
+  }
+
+  .analytics-card {
+    background: #fff;
+
+    border: none;
+
+    border-radius: 20px;
+
+    box-shadow: 0 12px 25px rgba(0, 0, 0, 0.05);
+  }
+
+  .analytics-card .card-header {
+    background: #fff;
+
+    border: none;
+
+    padding: 22px;
+
+    font-weight: 700;
+
+    font-size: 18px;
+  }
+
+  .chart-box {
+    height: 360px;
+
+    padding: 20px;
+  }
+
+  .table thead {
+    background: #eef2ff;
+  }
+
+  .table thead th {
+    border: none;
+
+    padding: 15px;
+
+    font-weight: 700;
+  }
+
+  .table tbody td {
+    padding: 15px;
+
+    vertical-align: middle;
+  }
+
+  .badge-score {
+    padding: 8px 14px;
+
+    border-radius: 30px;
+
+    font-size: 12px;
+  }
+</style>
+
+{% endblock %} {% block content %}
+
+<div class="container-fluid">
+  <div
+    class="page-header d-flex justify-content-between align-items-center flex-wrap"
+  >
+    <div>
+      <h3>
+        <i class="bi bi-bar-chart-fill text-primary me-2"></i>
+
+        Admin Analytics
+      </h3>
+
+      <p>AI Resume Screening Complete Analytics Dashboard</p>
+    </div>
+
+    <div>
+      <a href="{% url 'admin_dashboard' %}" class="btn btn-primary px-4">
+        <i class="bi bi-speedometer2 me-2"></i>
+
+        Dashboard
+      </a>
+    </div>
+  </div>
+
+  <div class="row g-4 mb-4">
+    <div class="col-lg-3">
+      <div class="stats-card">
+        <div class="card-body d-flex align-items-center">
+          <div class="stats-icon bg-indigo me-3">
+            <i class="bi bi-people-fill"></i>
+          </div>
+
+          <div>
+            <div class="stat-title">Users</div>
+
+            <div class="stat-value">{{ total_users }}</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-lg-3">
+      <div class="stats-card">
+        <div class="card-body d-flex align-items-center">
+          <div class="stats-icon bg-success me-3">
+            <i class="bi bi-file-earmark-text-fill"></i>
+          </div>
+
+          <div>
+            <div class="stat-title">Resumes</div>
+
+            <div class="stat-value">{{ total_resumes }}</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-lg-3">
+      <div class="stats-card">
+        <div class="card-body d-flex align-items-center">
+          <div class="stats-icon bg-warning me-3">
+            <i class="bi bi-award-fill"></i>
+          </div>
+
+          <div>
+            <div class="stat-title">Average ATS</div>
+
+            <div class="stat-value">{{ average_score }}%</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-lg-3">
+      <div class="stats-card">
+        <div class="card-body d-flex align-items-center">
+          <div class="stats-icon bg-danger me-3">
+            <i class="bi bi-envelope-fill"></i>
+          </div>
+
+          <div>
+            <div class="stat-title">Messages</div>
+
+            <div class="stat-value">{{ total_messages }}</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="row g-4">
+    <div class="col-lg-8">
+      <div class="analytics-card">
+        <div class="card-header">
+          <i class="bi bi-graph-up-arrow text-primary me-2"></i>
+
+          Monthly Resume Upload Report
+        </div>
+
+        <div class="card-body">
+          <canvas id="monthlyChart" class="chart-box"></canvas>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-lg-4">
+      <div class="analytics-card">
+        <div class="card-header">
+          <i class="bi bi-pie-chart-fill text-success me-2"></i>
+
+          ATS Score Distribution
+        </div>
+
+        <div class="card-body">
+          <canvas id="scoreChart" class="chart-box"></canvas>
+        </div>
+      </div>
+    </div>
+    <div class="row g-4 mt-1">
+      <div class="col-lg-6">
+        <div class="analytics-card">
+          <div class="card-header">
+            <i class="bi bi-lightning-charge-fill text-warning me-2"></i>
+
+            Top Skills Analysis
+          </div>
+
+          <div class="card-body">
+            <canvas id="skillsChart" class="chart-box"></canvas>
+          </div>
+        </div>
+      </div>
+
+      <div class="col-lg-6">
+        <div class="analytics-card">
+          <div class="card-header">
+            <i class="bi bi-bar-chart-fill text-danger me-2"></i>
+
+            System Performance
+          </div>
+
+          <div class="card-body">
+            <table class="table align-middle">
+              <thead>
+                <tr>
+                  <th>Metric</th>
+
+                  <th>Value</th>
+                </tr>
+              </thead>
+
+              <tbody>
+                <tr>
+                  <td>Total Users</td>
+
+                  <td>{{ total_users }}</td>
+                </tr>
+
+                <tr>
+                  <td>Active Users</td>
+
+                  <td>{{ active_users }}</td>
+                </tr>
+
+                <tr>
+                  <td>Total Resume</td>
+
+                  <td>{{ total_resumes }}</td>
+                </tr>
+
+                <tr>
+                  <td>Total Messages</td>
+
+                  <td>{{ total_messages }}</td>
+                </tr>
+
+                <tr>
+                  <td>Highest ATS</td>
+
+                  <td>
+                    <span class="badge bg-success badge-score">
+                      {{ highest_score }}%
+                    </span>
+                  </td>
+                </tr>
+
+                <tr>
+                  <td>Average ATS</td>
+
+                  <td>
+                    <span class="badge bg-primary badge-score">
+                      {{ average_score }}%
+                    </span>
+                  </td>
+                </tr>
+
+                <tr>
+                  <td>Lowest ATS</td>
+
+                  <td>
+                    <span class="badge bg-danger badge-score">
+                      {{ lowest_score }}%
+                    </span>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="row g-4 mt-1">
+      <div class="col-lg-8">
+        <div class="analytics-card">
+          <div class="card-header">
+            <i class="bi bi-trophy-fill text-warning me-2"></i>
+
+            Top Users
+          </div>
+
+          <div class="table-responsive">
+            <table class="table align-middle mb-0">
+              <thead>
+                <tr>
+                  <th>#</th>
+
+                  <th>Name</th>
+
+                  <th>Email</th>
+
+                  <th>Resume</th>
+                </tr>
+              </thead>
+
+              <tbody>
+                {% for user in top_users %}
+
+                <tr>
+                  <td>{{ forloop.counter }}</td>
+
+                  <td>{{ user.fullname }}</td>
+
+                  <td>{{ user.email }}</td>
+
+                  <td>
+                    <span class="badge bg-primary">
+                      {{ user.resume_count }}
+                    </span>
+                  </td>
+                </tr>
+
+                {% empty %}
+
+                <tr>
+                  <td colspan="4" class="text-center py-5">No Users Found</td>
+                </tr>
+
+                {% endfor %}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <div class="col-lg-4">
+        <div class="analytics-card">
+          <div class="card-header">
+            <i class="bi bi-download me-2 text-success"></i>
+
+            Export Report
+          </div>
+
+          <div class="card-body text-center">
+            <i
+              class="bi bi-file-earmark-arrow-down-fill text-success"
+              style="font-size: 65px"
+            >
+            </i>
+
+            <h5 class="mt-3">Analytics Report</h5>
+
+            <p class="text-muted">Generated by AI Resume Screening System</p>
+
+            <button class="btn btn-success w-100">
+              <i class="bi bi-download me-2"></i>
+
+              Download Report
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="row g-4 mt-1">
+
+<div class="col-lg-12">
+
+<div class="analytics-card">
+
+<div class="card-header d-flex justify-content-between align-items-center">
+
+<h5 class="mb-0">
+
+<i class="bi bi-clock-history text-primary me-2"></i>
+
+Recent Resume Uploads
+
+</h5>
+
+<span class="badge bg-primary">
+
+{{ recent_uploads|length }} Records
+
+</span>
+
+</div>
+
+<div class="table-responsive">
+
+<table class="table table-hover align-middle mb-0">
+
+<thead>
+
+<tr>
+
+<th>#</th>
+
+<th>Candidate</th>
+
+<th>Email</th>
+
+<th>ATS Score</th>
+
+<th>Uploaded</th>
+
+<th>Status</th>
+
+</tr>
+
+</thead>
+
+<tbody>
+
+{% for resume in recent_uploads %}
+
+<tr>
+
+<td>{{ forloop.counter }}</td>
+
+<td>
+
+<strong>
+
+{{ resume.user.fullname }}
+
+</strong>
+
+</td>
+
+<td>
+
+{{ resume.user.email }}
+
+</td>
+
+<td>
+
+{% if resume.ats_score >= 80 %}
+
+<span class="badge bg-success">
+
+{{ resume.ats_score }}%
+
+</span>
+
+{% elif resume.ats_score >= 60 %}
+
+<span class="badge bg-warning text-dark">
+
+{{ resume.ats_score }}%
+
+</span>
+
+{% else %}
+
+<span class="badge bg-danger">
+
+{{ resume.ats_score }}%
+
+</span>
+
+{% endif %}
+
+</td>
+
+<td>
+
+{{ resume.uploaded_at|date:"d M Y h:i A" }}
+
+</td>
+
+<td>
+
+{% if resume.ats_score >= 80 %}
+
+<span class="badge bg-success">
+
+Excellent
+
+</span>
+
+{% elif resume.ats_score >= 60 %}
+
+<span class="badge bg-primary">
+
+Good
+
+</span>
+
+{% elif resume.ats_score >= 40 %}
+
+<span class="badge bg-warning text-dark">
+
+Average
+
+</span>
+
+{% else %}
+
+<span class="badge bg-danger">
+
+Poor
+
+</span>
+
+{% endif %}
+
+</td>
+
+</tr>
+
+{% empty %}
+
+<tr>
+
+<td colspan="6" class="text-center py-5">
+
+<i class="bi bi-folder2-open display-5 text-muted"></i>
+
+<h5 class="mt-3">
+
+No Resume Records Found
+
+</h5>
+
+</td>
+
+</tr>
+
+{% endfor %}
+
+</tbody>
+
+</table>
+
+</div>
+
+</div>
+
+</div>
+
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<script>
+
+const monthlyChart = new Chart(
+
+document.getElementById("monthlyChart"),
+
+{
+
+type:"line",
+
+data:{
+
+labels:{{ monthly_labels|safe }},
+
+datasets:[{
+
+label:"Resume Uploads",
+
+data:{{ monthly_values|safe }},
+
+borderWidth:3,
+
+fill:true,
+
+tension:.4
+
+}]
+
+},
+
+options:{
+
+responsive:true,
+
+plugins:{
+
+legend:{
+
+display:true
+
+}
+
+}
+
+}
+
+}
+
+);
+
+const scoreChart = new Chart(
+
+document.getElementById("scoreChart"),
+
+{
+
+type:"doughnut",
+
+data:{
+
+labels:["Excellent","Good","Average","Poor"],
+
+datasets:[{
+
+data:[
+
+{{ score_distribution.excellent }},
+
+{{ score_distribution.good }},
+
+{{ score_distribution.average }},
+
+{{ score_distribution.poor }}
+
+]
+
+}]
+
+},
+
+options:{
+
+responsive:true
+
+}
+
+}
+
+);
+
+const skillsChart = new Chart(
+
+document.getElementById("skillsChart"),
+
+{
+
+type:"bar",
+
+data:{
+
+labels:{{ skill_labels|safe }},
+
+datasets:[{
+
+label:"Top Skills",
+
+data:{{ skill_values|safe }}
+
+}]
+
+},
+
+options:{
+
+responsive:true,
+
+plugins:{
+
+legend:{
+
+display:false
+
+}
+
+}
+
+}
+
+}
+
+);
+
+</script>
+
+{% endblock %}

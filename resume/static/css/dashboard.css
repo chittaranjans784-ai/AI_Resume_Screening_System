@@ -1,0 +1,806 @@
+/* ==========================================
+   AI Resume Screening Dashboard CSS
+   Part - 1
+========================================== */
+
+*{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+}
+
+body{
+    font-family:'Segoe UI',sans-serif;
+    background:linear-gradient(135deg,#081b29,#16384c,#23495c);
+    min-height:100vh;
+    overflow-x:hidden;
+}
+
+/* ================= Wrapper ================= */
+
+.wrapper{
+    display:flex;
+    width:100%;
+    min-height:100vh;
+}
+
+/* ================= Sidebar ================= */
+
+.sidebar{
+
+    width:260px;
+    min-height:100vh;
+
+    position:fixed;
+    left:0;
+    top:0;
+    bottom:0;
+
+    background:#0d2538;
+
+    border-right:1px solid rgba(255,255,255,.08);
+
+    z-index:999;
+
+    transition:.3s;
+
+}
+
+.brand{
+
+    padding:35px 20px;
+
+    text-align:center;
+
+}
+
+.logo-circle{
+
+    width:70px;
+    height:70px;
+
+    margin:auto;
+
+    border-radius:50%;
+
+    background:#0d6efd;
+
+    display:flex;
+    justify-content:center;
+    align-items:center;
+
+    font-size:32px;
+
+    color:#fff;
+
+    box-shadow:0 0 20px rgba(13,110,253,.4);
+
+}
+
+.brand h4{
+
+    color:#fff;
+
+    font-weight:700;
+
+    margin-top:15px;
+
+}
+
+.brand small{
+
+    color:#bfc7cf;
+
+}
+
+/* ================= Sidebar Menu ================= */
+
+.sidebar .nav{
+
+    padding-top:15px;
+
+}
+
+.sidebar .nav-link{
+
+    color:#d7dde3;
+
+    padding:13px 18px;
+
+    border-radius:10px;
+
+    margin-bottom:8px;
+
+    transition:.3s;
+
+    font-weight:500;
+
+}
+
+.sidebar .nav-link i{
+
+    margin-right:8px;
+
+}
+
+.sidebar .nav-link:hover{
+
+    background:#0d6efd;
+
+    color:#fff;
+
+    transform:translateX(5px);
+
+}
+
+.sidebar .nav-link.active{
+
+    background:#0d6efd;
+
+    color:#fff;
+
+}
+
+.sidebar .text-danger:hover{
+
+    background:#dc3545 !important;
+
+    color:#fff !important;
+
+}
+
+/* ================= Main Content ================= */
+
+.main-content{
+
+    margin-left:260px;
+
+    width:calc(100% - 260px);
+
+    padding:30px;
+
+}
+
+/* ================= Topbar ================= */
+
+.topbar{
+
+    display:flex;
+
+    justify-content:space-between;
+
+    align-items:center;
+
+    margin-bottom:30px;
+
+}
+
+.topbar h2{
+
+    color:#fff;
+
+    font-weight:700;
+
+}
+
+.topbar small{
+
+    color:#cfd6dc;
+
+}
+
+/* ================= Dashboard Cards ================= */
+
+.dashboard-card{
+
+    border:none;
+
+    border-radius:18px;
+
+    background:rgba(255,255,255,.10);
+
+    backdrop-filter:blur(10px);
+
+    color:#fff;
+
+    transition:.3s;
+
+    overflow:hidden;
+
+}
+
+.dashboard-card:hover{
+
+    transform:translateY(-6px);
+
+    box-shadow:0 15px 30px rgba(0,0,0,.25);
+
+}
+
+.dashboard-card .card-body{
+
+    padding:28px;
+
+}
+
+.dashboard-card h6{
+
+    color:#d7dde3;
+
+    font-size:15px;
+
+}
+
+.dashboard-card h2{
+
+    font-weight:700;
+
+    margin-top:10px;
+
+}
+
+/* ================= Icon Box ================= */
+
+.icon-box{
+
+    width:60px;
+
+    height:60px;
+
+    border-radius:14px;
+
+    display:flex;
+
+    justify-content:center;
+
+    align-items:center;
+
+    color:#fff;
+
+    font-size:28px;
+
+}
+
+/* ================= Bootstrap Card Override ================= */
+
+.card{
+
+    border-radius:18px;
+
+    overflow:hidden;
+
+}
+
+.card-header{
+
+    background:#fff;
+
+    font-weight:600;
+
+}
+
+.table{
+
+    margin-bottom:0;
+
+}
+
+.table td,
+.table th{
+
+    vertical-align:middle;
+
+}
+
+/* ==========================================
+   AI Resume Dashboard CSS
+   Part - 2
+========================================== */
+
+/* ============ Progress Circle ============ */
+
+.progress-circle{
+
+    width:170px;
+    height:170px;
+
+    border-radius:50%;
+
+    margin:auto;
+
+    background:
+    conic-gradient(#11d3f3 0%,
+                   #11d3f3 40%,
+                   #ecf0f1 40%,
+                   #ecf0f1 100%);
+
+    display:flex;
+    justify-content:center;
+    align-items:center;
+
+    box-shadow:0 0 20px rgba(17,211,243,.35);
+
+    position:relative;
+
+}
+
+.progress-circle::before{
+
+    content:"";
+
+    position:absolute;
+
+    width:100px;
+    height:100px;
+
+    background:#183848;
+
+    border-radius:50%;
+
+}
+
+.progress-value{
+
+    position:relative;
+
+    z-index:2;
+
+    color:#fff;
+
+    font-size:38px;
+
+    font-weight:700;
+
+}
+
+/* ============ Progress Bar ============ */
+
+.progress{
+
+    height:18px;
+
+    border-radius:30px;
+
+    background:#e9ecef;
+
+    overflow:hidden;
+
+}
+
+.progress-bar{
+
+    font-weight:600;
+
+    font-size:13px;
+
+}
+
+/* ============ Buttons ============ */
+
+.btn{
+
+    border-radius:10px;
+
+    font-weight:600;
+
+}
+
+.btn-success{
+
+    box-shadow:0 8px 20px rgba(25,135,84,.25);
+
+}
+
+.btn-danger{
+
+    box-shadow:0 8px 20px rgba(220,53,69,.25);
+
+}
+
+.btn-primary{
+
+    box-shadow:0 8px 20px rgba(13,110,253,.25);
+
+}
+
+/* ============ Table ============ */
+
+.table thead{
+
+    background:#f8f9fa;
+
+}
+
+.table-hover tbody tr:hover{
+
+    background:#f2f7ff;
+
+}
+
+.table td{
+
+    font-size:15px;
+
+}
+
+/* ============ Badges ============ */
+
+.badge{
+
+    border-radius:8px;
+
+    padding:8px 14px;
+
+    font-size:13px;
+
+}
+
+/* ============ Scrollbar ============ */
+
+::-webkit-scrollbar{
+
+    width:8px;
+
+}
+
+::-webkit-scrollbar-thumb{
+
+    background:#0d6efd;
+
+    border-radius:20px;
+
+}
+
+::-webkit-scrollbar-track{
+
+    background:#e9ecef;
+
+}
+
+/* ============ Responsive ============ */
+
+@media(max-width:992px){
+
+    .sidebar{
+
+        position:relative;
+
+        width:100%;
+
+        min-height:auto;
+
+    }
+
+    .main-content{
+
+        margin-left:0;
+
+        width:100%;
+
+        padding:20px;
+
+    }
+
+    .wrapper{
+
+        flex-direction:column;
+
+    }
+
+    .topbar{
+
+        flex-direction:column;
+
+        align-items:flex-start;
+
+        gap:10px;
+
+    }
+
+}
+
+@media(max-width:768px){
+
+    .dashboard-card{
+
+        margin-bottom:15px;
+
+    }
+
+    .progress-circle{
+
+        width:140px;
+
+        height:140px;
+
+    }
+
+    .progress-circle::before{
+
+        width:82px;
+
+        height:82px;
+
+    }
+
+    .progress-value{
+
+        font-size:30px;
+
+    }
+
+    .icon-box{
+
+        width:50px;
+
+        height:50px;
+
+        font-size:22px;
+
+    }
+
+    .table{
+
+        font-size:14px;
+
+    }
+
+    .btn{
+
+        margin-bottom:10px;
+
+        width:100%;
+
+    }
+
+}
+
+/* ============ Card Hover ============ */
+
+.card{
+
+    transition:.3s;
+
+}
+
+.card:hover{
+
+    transform:translateY(-4px);
+
+    box-shadow:0 15px 30px rgba(0,0,0,.15);
+
+}
+
+/* ============ Footer Space ============ */
+
+.container-fluid{
+
+    padding-bottom:40px;
+
+}
+
+/* ==========================================
+   AI Resume Dashboard CSS
+   Part - 3 (Final Polish)
+========================================== */
+
+/* ===== Latest Resume Card ===== */
+
+.card-header h5{
+    font-weight:700;
+    color:#1f2937;
+}
+
+.card-header i{
+    color:#0d6efd;
+}
+
+/* ===== Resume Table ===== */
+
+.table tbody tr{
+    transition:.3s;
+}
+
+.table tbody tr:hover{
+    transform:scale(1.01);
+}
+
+.table td{
+    padding:15px;
+}
+
+.table th{
+    padding:15px;
+    font-weight:600;
+}
+
+/* ===== Resume File Icon ===== */
+
+.bi-file-earmark-pdf{
+    color:#dc3545;
+    font-size:18px;
+}
+
+/* ===== ATS Score Badge ===== */
+
+.badge{
+    min-width:65px;
+    text-align:center;
+}
+
+/* ===== Download Button ===== */
+
+.btn-success:hover{
+    transform:translateY(-2px);
+}
+
+/* ===== Delete Button ===== */
+
+.btn-danger:hover{
+    transform:translateY(-2px);
+}
+
+/* ===== View History Button ===== */
+
+.btn-outline-primary:hover{
+    color:#fff;
+}
+
+/* ===== Latest Resume Box ===== */
+
+.card-body table{
+    border-radius:10px;
+    overflow:hidden;
+}
+
+/* ===== Animation ===== */
+
+.dashboard-card,
+.card{
+
+    animation:fadeUp .6s ease;
+
+}
+
+@keyframes fadeUp{
+
+    from{
+
+        opacity:0;
+        transform:translateY(25px);
+
+    }
+
+    to{
+
+        opacity:1;
+        transform:translateY(0);
+
+    }
+
+}
+
+/* ===== Welcome Text ===== */
+
+.topbar h2 span{
+
+    color:#0d6efd;
+
+}
+
+/* ===== Sidebar Divider ===== */
+
+.sidebar hr{
+
+    border-color:rgba(255,255,255,.1);
+
+}
+
+/* ===== Card Shadows ===== */
+
+.shadow-sm{
+
+    box-shadow:0 10px 25px rgba(0,0,0,.12)!important;
+
+}
+
+/* ===== Glass Effect ===== */
+
+.card{
+
+    backdrop-filter:blur(8px);
+
+}
+
+/* ===== Container ===== */
+
+.container-fluid{
+
+    animation:fadePage .5s ease-in-out;
+
+}
+
+@keyframes fadePage{
+
+    from{
+
+        opacity:0;
+
+    }
+
+    to{
+
+        opacity:1;
+
+    }
+
+}
+
+/* ===== Responsive Fix ===== */
+
+img{
+
+    max-width:100%;
+
+}
+
+table{
+
+    width:100%;
+
+}
+
+/* ===== Sidebar Active Indicator ===== */
+
+.sidebar .nav-link.active{
+
+    position:relative;
+
+}
+
+.sidebar .nav-link.active::before{
+
+    content:"";
+
+    position:absolute;
+
+    left:0;
+    top:12px;
+
+    width:4px;
+    height:24px;
+
+    background:#fff;
+
+    border-radius:5px;
+
+}
+
+/* ===== Dashboard Background ===== */
+
+.main-content{
+
+    background:transparent;
+
+}
+
+/* ===== Card Border ===== */
+
+.dashboard-card,
+.card{
+
+    border:1px solid rgba(255,255,255,.08);
+
+}
+
+/* ===== Smooth Scrolling ===== */
+
+html{
+
+    scroll-behavior:smooth;
+
+}
+
+/* ==========================================
+    END OF dashboard.css
+========================================== */

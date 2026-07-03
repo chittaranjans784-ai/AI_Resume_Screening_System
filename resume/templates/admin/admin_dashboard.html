@@ -1,0 +1,1427 @@
+{% extends "admin/base.html" %}
+{% load static %}
+
+{% block title %}
+Admin Dashboard
+{% endblock %}
+
+{% block extra_css %}
+
+<style>
+
+:root{
+
+--primary:#4f46e5;
+--secondary:#6366f1;
+--success:#16a34a;
+--warning:#f59e0b;
+--danger:#dc2626;
+--info:#0ea5e9;
+
+--dark:#111827;
+--gray:#6b7280;
+--border:#e5e7eb;
+--bg:#f8fafc;
+
+}
+
+body{
+
+background:var(--bg);
+
+}
+
+.dashboard-header{
+
+background:#fff;
+
+border-radius:22px;
+
+padding:30px;
+
+margin-bottom:30px;
+
+box-shadow:0 12px 30px rgba(0,0,0,.05);
+
+}
+
+.dashboard-header h3{
+
+font-weight:700;
+
+color:#111827;
+
+margin-bottom:6px;
+
+}
+
+.dashboard-header p{
+
+margin:0;
+
+color:#6b7280;
+
+}
+
+.stats-card{
+
+background:#fff;
+
+border:none;
+
+border-radius:20px;
+
+overflow:hidden;
+
+transition:.35s;
+
+box-shadow:0 12px 25px rgba(0,0,0,.05);
+
+position:relative;
+
+}
+
+.stats-card:hover{
+
+transform:translateY(-8px);
+
+}
+
+.stats-icon{
+
+width:70px;
+
+height:70px;
+
+border-radius:18px;
+
+display:flex;
+
+align-items:center;
+
+justify-content:center;
+
+font-size:30px;
+
+color:#fff;
+
+}
+
+.bg-indigo{
+
+background:linear-gradient(135deg,#4f46e5,#6366f1);
+
+}
+
+.bg-success{
+
+background:linear-gradient(135deg,#16a34a,#22c55e);
+
+}
+
+.bg-warning{
+
+background:linear-gradient(135deg,#f59e0b,#fbbf24);
+
+}
+
+.bg-danger{
+
+background:linear-gradient(135deg,#dc2626,#ef4444);
+
+}
+
+.bg-info{
+
+background:linear-gradient(135deg,#0ea5e9,#38bdf8);
+
+}
+
+.bg-dark{
+
+background:linear-gradient(135deg,#111827,#374151);
+
+}
+
+.stat-title{
+
+font-size:14px;
+
+font-weight:600;
+
+color:#6b7280;
+
+}
+
+.stat-value{
+
+font-size:30px;
+
+font-weight:700;
+
+color:#111827;
+
+}
+
+.dashboard-card{
+
+background:#fff;
+
+border:none;
+
+border-radius:20px;
+
+box-shadow:0 12px 25px rgba(0,0,0,.05);
+
+}
+
+.dashboard-card .card-header{
+
+background:#fff;
+
+border:none;
+
+padding:22px;
+
+font-size:18px;
+
+font-weight:700;
+
+}
+
+.chart-box{
+
+height:340px;
+
+padding:20px;
+
+}
+
+.progress{
+
+height:10px;
+
+border-radius:30px;
+
+}
+
+.activity-item{
+
+display:flex;
+
+align-items:flex-start;
+
+gap:15px;
+
+padding:18px 0;
+
+border-bottom:1px solid #eef2f7;
+
+}
+
+.activity-item:last-child{
+
+border-bottom:none;
+
+}
+
+.activity-icon{
+
+width:50px;
+
+height:50px;
+
+border-radius:50%;
+
+display:flex;
+
+align-items:center;
+
+justify-content:center;
+
+background:#eef2ff;
+
+color:#4f46e5;
+
+font-size:20px;
+
+}
+
+.table thead{
+
+background:#eef2ff;
+
+}
+
+.table thead th{
+
+border:none;
+
+padding:16px;
+
+font-weight:700;
+
+}
+
+.table tbody td{
+
+padding:16px;
+
+vertical-align:middle;
+
+}
+
+.badge-score{
+
+padding:8px 14px;
+
+border-radius:30px;
+
+font-size:12px;
+
+}
+
+.quick-btn{
+
+border-radius:14px;
+
+padding:12px;
+
+font-weight:600;
+
+}
+
+</style>
+
+{% endblock %}
+
+{% block content %}
+
+<div class="container-fluid">
+
+<div class="dashboard-header d-flex justify-content-between align-items-center flex-wrap">
+
+<div>
+
+<h3>
+
+<i class="bi bi-speedometer2 text-primary me-2"></i>
+
+Admin Dashboard
+
+</h3>
+
+<p>
+
+Welcome back, {{ admin.fullname }} 👋
+
+Manage AI Resume Screening System efficiently.
+
+</p>
+
+</div>
+
+<div>
+
+<a
+
+href="{% url 'dashboard' %}"
+
+class="btn btn-primary px-4">
+
+<i class="bi bi-house-door-fill me-2"></i>
+
+User Panel
+
+</a>
+
+</div>
+
+</div>
+
+<div class="row g-4">
+
+<div class="col-xl-3 col-md-6">
+
+<div class="stats-card">
+
+<div class="card-body d-flex align-items-center">
+
+<div class="stats-icon bg-indigo me-3">
+
+<i class="bi bi-people-fill"></i>
+
+</div>
+
+<div>
+
+<div class="stat-title">
+
+Registered Users
+
+</div>
+
+<div class="stat-value">
+
+{{ total_users }}
+
+</div>
+
+</div>
+
+</div>
+
+</div>
+
+</div>
+
+<div class="col-xl-3 col-md-6">
+
+<div class="stats-card">
+
+<div class="card-body d-flex align-items-center">
+
+<div class="stats-icon bg-success me-3">
+
+<i class="bi bi-file-earmark-text-fill"></i>
+
+</div>
+
+<div>
+
+<div class="stat-title">
+
+Total Resume
+
+</div>
+
+<div class="stat-value">
+
+{{ total_resumes }}
+
+</div>
+
+</div>
+
+</div>
+
+</div>
+
+</div>
+
+<div class="col-xl-3 col-md-6">
+
+<div class="stats-card">
+
+<div class="card-body d-flex align-items-center">
+
+<div class="stats-icon bg-warning me-3">
+
+<i class="bi bi-award-fill"></i>
+
+</div>
+
+<div>
+
+<div class="stat-title">
+
+Average ATS
+
+</div>
+
+<div class="stat-value">
+
+{{ average_score }}%
+
+</div>
+
+</div>
+
+</div>
+
+</div>
+
+</div>
+
+<div class="col-xl-3 col-md-6">
+
+<div class="stats-card">
+
+<div class="card-body d-flex align-items-center">
+
+<div class="stats-icon bg-danger me-3">
+
+<i class="bi bi-envelope-fill"></i>
+
+</div>
+
+<div>
+
+<div class="stat-title">
+
+Contact Messages
+
+</div>
+
+<div class="stat-value">
+
+{{ total_messages }}
+
+</div>
+
+</div>
+
+</div>
+
+</div>
+
+</div>
+
+<div class="col-xl-3 col-md-6">
+
+<div class="stats-card">
+
+<div class="card-body d-flex align-items-center">
+
+<div class="stats-icon bg-info me-3">
+
+<i class="bi bi-stars"></i>
+
+</div>
+
+<div>
+
+<div class="stat-title">
+
+AI Reviews
+
+</div>
+
+<div class="stat-value">
+
+{{ ai_reviews }}
+
+</div>
+
+</div>
+
+</div>
+
+</div>
+
+</div>
+
+<div class="col-xl-3 col-md-6">
+
+<div class="stats-card">
+
+<div class="card-body d-flex align-items-center">
+
+<div class="stats-icon bg-dark me-3">
+
+<i class="bi bi-clock-history"></i>
+
+</div>
+
+<div>
+
+<div class="stat-title">
+
+Pending Reviews
+
+</div>
+
+<div class="stat-value">
+
+{{ pending_reviews }}
+
+</div>
+
+</div>
+
+</div>
+
+</div>
+
+</div>
+<div class="col-xl-3 col-md-6">
+
+<div class="stats-card">
+
+<div class="card-body d-flex align-items-center">
+
+<div class="stats-icon bg-success me-3">
+
+<i class="bi bi-check2-circle"></i>
+
+</div>
+
+<div>
+
+<div class="stat-title">
+
+Processed
+
+</div>
+
+<div class="stat-value">
+
+{{ processed_percent }}%
+
+</div>
+
+</div>
+
+</div>
+
+</div>
+
+</div>
+
+<div class="col-xl-3 col-md-6">
+
+<div class="stats-card">
+
+<div class="card-body d-flex align-items-center">
+
+<div class="stats-icon bg-warning me-3">
+
+<i class="bi bi-lightbulb-fill"></i>
+
+</div>
+
+<div>
+
+<div class="stat-title">
+
+AI Suggestions
+
+</div>
+
+<div class="stat-value">
+
+{{ suggestion_percent }}%
+
+</div>
+
+</div>
+
+</div>
+
+</div>
+
+</div>
+
+<div class="col-xl-3 col-md-6">
+
+<div class="stats-card">
+
+<div class="card-body d-flex align-items-center">
+
+<div class="stats-icon bg-danger me-3">
+
+<i class="bi bi-shield-check"></i>
+
+</div>
+
+<div>
+
+<div class="stat-title">
+
+Accuracy
+
+</div>
+
+<div class="stat-value">
+
+{{ accuracy_percent }}%
+
+</div>
+
+</div>
+
+</div>
+
+</div>
+
+</div>
+
+</div>
+
+<div class="row g-4 mt-1">
+
+<div class="col-lg-8">
+
+<div class="dashboard-card">
+
+<div class="card-header">
+
+<i class="bi bi-graph-up-arrow text-primary me-2"></i>
+
+Monthly Resume Uploads
+
+</div>
+
+<div class="card-body">
+
+<canvas id="resumeChart" class="chart-box"></canvas>
+
+</div>
+
+</div>
+
+</div>
+
+<div class="col-lg-4">
+
+<div class="dashboard-card">
+
+<div class="card-header">
+
+<i class="bi bi-pie-chart-fill text-success me-2"></i>
+
+ATS Distribution
+
+</div>
+
+<div class="card-body">
+
+<canvas id="scoreChart" class="chart-box"></canvas>
+
+</div>
+
+</div>
+
+</div>
+
+</div>
+
+<div class="row g-4 mt-1">
+
+<div class="col-lg-8">
+
+<div class="dashboard-card">
+
+<div class="card-header">
+
+<i class="bi bi-clock-history text-primary me-2"></i>
+
+Recent Resume Uploads
+
+</div>
+
+<div class="table-responsive">
+
+<table class="table table-hover align-middle mb-0">
+
+<thead>
+
+<tr>
+
+<th>#</th>
+
+<th>User</th>
+
+<th>Email</th>
+
+<th>ATS</th>
+
+<th>Date</th>
+
+</tr>
+
+</thead>
+
+<tbody>
+
+{% for resume in recent_resumes %}
+
+<tr>
+
+<td>{{ forloop.counter }}</td>
+
+<td>{{ resume.user.fullname }}</td>
+
+<td>{{ resume.user.email }}</td>
+
+<td>
+
+{% if resume.ats_score >= 80 %}
+
+<span class="badge bg-success badge-score">
+
+{{ resume.ats_score }}%
+
+</span>
+
+{% elif resume.ats_score >= 60 %}
+
+<span class="badge bg-warning text-dark badge-score">
+
+{{ resume.ats_score }}%
+
+</span>
+
+{% else %}
+
+<span class="badge bg-danger badge-score">
+
+{{ resume.ats_score }}%
+
+</span>
+
+{% endif %}
+
+</td>
+
+<td>
+
+{{ resume.uploaded_at|date:"d M Y" }}
+
+</td>
+
+</tr>
+
+{% empty %}
+
+<tr>
+
+<td colspan="5" class="text-center py-5">
+
+No Resume Found
+
+</td>
+
+</tr>
+
+{% endfor %}
+
+</tbody>
+
+</table>
+
+</div>
+
+</div>
+
+</div>
+
+<div class="col-lg-4">
+
+<div class="dashboard-card">
+
+<div class="card-header">
+
+<i class="bi bi-lightning-charge-fill text-warning me-2"></i>
+
+Quick Actions
+
+</div>
+
+<div class="card-body d-grid gap-3">
+
+<a href="{% url 'manage_users' %}" class="btn btn-primary quick-btn">
+
+<i class="bi bi-people-fill me-2"></i>
+
+Manage Users
+
+</a>
+
+<a href="{% url 'manage_resume' %}" class="btn btn-success quick-btn">
+
+<i class="bi bi-file-earmark-text-fill me-2"></i>
+
+Manage Resume
+
+</a>
+
+<a href="{% url 'contact_messages' %}" class="btn btn-warning quick-btn">
+
+<i class="bi bi-envelope-fill me-2"></i>
+
+Contact Messages
+
+</a>
+
+<a href="{% url 'admin_analytics' %}" class="btn btn-info text-white quick-btn">
+
+<i class="bi bi-bar-chart-line-fill me-2"></i>
+
+Analytics
+
+</a>
+
+<a href="{% url 'admin_logout' %}" class="btn btn-danger quick-btn">
+
+<i class="bi bi-box-arrow-right me-2"></i>
+
+Logout
+
+</a>
+
+</div>
+
+</div>
+
+</div>
+
+</div>
+<div class="row g-4 mt-1">
+
+<div class="col-lg-6">
+
+<div class="dashboard-card">
+
+<div class="card-header">
+
+<i class="bi bi-trophy-fill text-warning me-2"></i>
+
+Top ATS Scores
+
+</div>
+
+<div class="table-responsive">
+
+<table class="table table-hover align-middle mb-0">
+
+<thead>
+
+<tr>
+
+<th>#</th>
+
+<th>Candidate</th>
+
+<th>ATS Score</th>
+
+</tr>
+
+</thead>
+
+<tbody>
+
+{% for resume in top_scores %}
+
+<tr>
+
+<td>{{ forloop.counter }}</td>
+
+<td>{{ resume.user.fullname }}</td>
+
+<td>
+
+{% if resume.ats_score >= 80 %}
+
+<span class="badge bg-success badge-score">
+
+{{ resume.ats_score }}%
+
+</span>
+
+{% elif resume.ats_score >= 60 %}
+
+<span class="badge bg-warning text-dark badge-score">
+
+{{ resume.ats_score }}%
+
+</span>
+
+{% else %}
+
+<span class="badge bg-danger badge-score">
+
+{{ resume.ats_score }}%
+
+</span>
+
+{% endif %}
+
+</td>
+
+</tr>
+
+{% empty %}
+
+<tr>
+
+<td colspan="3" class="text-center py-4">
+
+No Records Found
+
+</td>
+
+</tr>
+
+{% endfor %}
+
+</tbody>
+
+</table>
+
+</div>
+
+</div>
+
+</div>
+
+<div class="col-lg-6">
+
+<div class="dashboard-card">
+
+<div class="card-header">
+
+<i class="bi bi-person-plus-fill text-primary me-2"></i>
+
+Recently Registered Users
+
+</div>
+
+<div class="table-responsive">
+
+<table class="table table-hover align-middle mb-0">
+
+<thead>
+
+<tr>
+
+<th>#</th>
+
+<th>Name</th>
+
+<th>Email</th>
+
+<th>Date</th>
+
+</tr>
+
+</thead>
+
+<tbody>
+
+{% for user in recent_users %}
+
+<tr>
+
+<td>{{ forloop.counter }}</td>
+
+<td>{{ user.fullname }}</td>
+
+<td>{{ user.email }}</td>
+
+<td>{{ user.created_at|date:"d M Y" }}</td>
+
+</tr>
+
+{% empty %}
+
+<tr>
+
+<td colspan="4" class="text-center py-4">
+
+No Users Found
+
+</td>
+
+</tr>
+
+{% endfor %}
+
+</tbody>
+
+</table>
+
+</div>
+
+</div>
+
+</div>
+
+</div>
+
+<div class="row g-4 mt-1">
+
+<div class="col-lg-6">
+
+<div class="dashboard-card">
+
+<div class="card-header">
+
+<i class="bi bi-tools text-success me-2"></i>
+
+Top Skills
+
+</div>
+
+<div class="card-body">
+
+<canvas id="skillsChart" class="chart-box"></canvas>
+
+</div>
+
+</div>
+
+</div>
+
+<div class="col-lg-6">
+
+<div class="dashboard-card">
+
+<div class="card-header">
+
+<i class="bi bi-activity text-danger me-2"></i>
+
+Recent Activities
+
+</div>
+
+<div class="card-body">
+
+{% for activity in recent_activities %}
+
+<div class="activity-item">
+
+<div class="activity-icon">
+
+<i class="bi bi-file-earmark-check-fill"></i>
+
+</div>
+
+<div>
+
+<h6 class="mb-1">
+
+{{ activity.title }}
+
+</h6>
+
+<p class="text-muted mb-1">
+
+{{ activity.description }}
+
+</p>
+
+<small class="text-secondary">
+
+{{ activity.created_at|timesince }} ago
+
+</small>
+
+</div>
+
+</div>
+
+{% empty %}
+
+<div class="text-center py-5">
+
+<i class="bi bi-clock-history display-5 text-muted"></i>
+
+<h6 class="mt-3">
+
+No Recent Activities
+
+</h6>
+
+</div>
+
+{% endfor %}
+
+</div>
+
+</div>
+
+</div>
+
+</div>
+<div class="row g-4 mt-1">
+
+<div class="col-lg-4">
+
+<div class="dashboard-card">
+
+<div class="card-header">
+
+<i class="bi bi-cpu-fill text-primary me-2"></i>
+
+AI Processing
+
+</div>
+
+<div class="card-body">
+
+<label class="fw-bold">
+
+Resume Processing
+
+</label>
+
+<div class="progress mb-3">
+
+<div
+
+class="progress-bar bg-primary"
+
+style="width:{{ processed_percent }}%;">
+
+{{ processed_percent }}%
+
+</div>
+
+</div>
+
+<label class="fw-bold">
+
+AI Suggestions
+
+</label>
+
+<div class="progress mb-3">
+
+<div
+
+class="progress-bar bg-success"
+
+style="width:{{ suggestion_percent }}%;">
+
+{{ suggestion_percent }}%
+
+</div>
+
+</div>
+
+<label class="fw-bold">
+
+Prediction Accuracy
+
+</label>
+
+<div class="progress">
+
+<div
+
+class="progress-bar bg-warning"
+
+style="width:{{ accuracy_percent }}%;">
+
+{{ accuracy_percent }}%
+
+</div>
+
+</div>
+
+</div>
+
+</div>
+
+</div>
+
+<div class="col-lg-8">
+
+<div class="dashboard-card">
+
+<div class="card-header d-flex justify-content-between align-items-center">
+
+<span>
+
+<i class="bi bi-stars text-warning me-2"></i>
+
+Top Skills Analysis
+
+</span>
+
+<span class="badge bg-primary">
+
+{{ top_skills|length }} Skills
+
+</span>
+
+</div>
+
+<div class="table-responsive">
+
+<table class="table table-hover align-middle mb-0">
+
+<thead>
+
+<tr>
+
+<th>#</th>
+
+<th>Skill</th>
+
+<th>Count</th>
+
+</tr>
+
+</thead>
+
+<tbody>
+
+{% for skill in top_skills %}
+
+<tr>
+
+<td>
+
+{{ forloop.counter }}
+
+</td>
+
+<td>
+
+{{ skill.name }}
+
+</td>
+
+<td>
+
+<span class="badge bg-success">
+
+{{ skill.count }}
+
+</span>
+
+</td>
+
+</tr>
+
+{% empty %}
+
+<tr>
+
+<td colspan="3" class="text-center py-5">
+
+No Skills Available
+
+</td>
+
+</tr>
+
+{% endfor %}
+
+</tbody>
+
+</table>
+
+</div>
+
+</div>
+
+</div>
+
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<script>
+
+new Chart(document.getElementById("resumeChart"),{
+
+type:"line",
+
+data:{
+
+labels:["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"],
+
+datasets:[{
+
+label:"Resume Uploads",
+
+data:[{{ jan }},{{ feb }},{{ mar }},{{ apr }},{{ may }},{{ jun }},{{ jul }},{{ aug }},{{ sep }},{{ oct }},{{ nov }},{{ dec }}],
+
+borderWidth:3,
+
+fill:true,
+
+tension:.4
+
+}]
+
+}
+
+});
+
+new Chart(document.getElementById("scoreChart"),{
+
+type:"doughnut",
+
+data:{
+
+labels:["Excellent","Good","Poor"],
+
+datasets:[{
+
+data:[
+
+{{ excellent_count }},
+
+{{ good_count }},
+
+{{ poor_count }}
+
+]
+
+}]
+
+}
+
+});
+
+new Chart(document.getElementById("skillsChart"),{
+
+type:"bar",
+
+data:{
+
+labels:[
+
+{% for skill in top_skills %}
+
+"{{ skill.name }}",
+
+{% endfor %}
+
+],
+
+datasets:[{
+
+label:"Skills",
+
+data:[
+
+{% for skill in top_skills %}
+
+{{ skill.count }},
+
+{% endfor %}
+
+]
+
+}]
+
+},
+
+options:{
+
+plugins:{
+
+legend:{
+
+display:false
+
+}
+
+},
+
+responsive:true
+
+}
+
+});
+
+</script>
+
+</div>
+
+{% endblock %}

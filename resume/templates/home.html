@@ -1,0 +1,1541 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>AI Resume Screening System</title>
+
+    <!-- Bootstrap -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+
+    <!-- Bootstrap Icons -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet">
+
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap"
+        rel="stylesheet">
+
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: "Poppins", sans-serif;
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            background: #f5f7fb;
+            overflow-x: hidden;
+        }
+
+        a {
+            text-decoration: none;
+        }
+
+        /*=========================
+            NAVBAR
+        ==========================*/
+
+        .navbar {
+            background: rgba(255, 255, 255, .95);
+            backdrop-filter: blur(15px);
+            box-shadow: 0 5px 25px rgba(0, 0, 0, .08);
+            padding: 15px 0;
+            transition: .4s;
+        }
+
+        .navbar-brand {
+            font-size: 28px;
+            font-weight: 800;
+            color: #0d6efd !important;
+        }
+
+        .navbar-brand span {
+            color: #ff4d4d;
+        }
+
+        .nav-link {
+            color: #333 !important;
+            font-weight: 500;
+            margin-left: 15px;
+            transition: .3s;
+        }
+
+        .nav-link:hover {
+            color: #0d6efd !important;
+        }
+
+        .login-btn {
+            background: #0d6efd;
+            color: white !important;
+            border-radius: 30px;
+            padding: 10px 24px !important;
+            transition: .3s;
+        }
+
+        .login-btn:hover {
+            background: #084ec2;
+            transform: translateY(-2px);
+        }
+
+        /*=========================
+            HERO SECTION
+        ==========================*/
+
+        .hero {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            background:
+                linear-gradient(rgba(0, 0, 0, .55),
+                    rgba(0, 0, 0, .55)),
+                url("{% static 'images/bg.jpg' %}") center/cover;
+            color: white;
+        }
+
+        .hero h1 {
+            font-size: 60px;
+            font-weight: 800;
+            line-height: 1.3;
+        }
+
+        .hero h1 span {
+            color: #00d4ff;
+        }
+
+        .hero p {
+            margin-top: 25px;
+            font-size: 18px;
+            color: #e6e6e6;
+        }
+
+        .hero-btn {
+            margin-top: 35px;
+        }
+
+        .btn-main {
+            background: #0d6efd;
+            color: white;
+            border-radius: 40px;
+            padding: 14px 35px;
+            font-weight: 600;
+            margin-right: 15px;
+            transition: .3s;
+        }
+
+        .btn-main:hover {
+            background: #084ec2;
+            transform: translateY(-4px);
+            color: white;
+        }
+
+        .btn-outline-light {
+            border-radius: 40px;
+            padding: 14px 35px;
+            font-weight: 600;
+        }
+
+        /*=========================
+            STATS
+        ==========================*/
+
+        .stats {
+            margin-top: -70px;
+            position: relative;
+            z-index: 100;
+        }
+
+        .stat-card {
+            background: white;
+            border-radius: 18px;
+            padding: 30px;
+            text-align: center;
+            box-shadow: 0 12px 30px rgba(0, 0, 0, .08);
+            transition: .4s;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-10px);
+        }
+
+        .stat-card i {
+            font-size: 42px;
+            color: #0d6efd;
+        }
+
+        .stat-card h2 {
+            margin-top: 20px;
+            font-weight: 700;
+            color: #222;
+        }
+
+        .stat-card p {
+            color: #777;
+            margin-bottom: 0;
+        }
+
+        /*=========================
+            SECTION TITLE
+        ==========================*/
+
+        .section-title {
+            text-align: center;
+            margin-bottom: 70px;
+        }
+
+        .section-title h2 {
+            font-weight: 800;
+            color: #222;
+            font-size: 42px;
+        }
+
+        .section-title p {
+            color: #777;
+            max-width: 750px;
+            margin: auto;
+            margin-top: 15px;
+        }
+
+        section {
+            padding: 100px 0;
+        }
+
+        /*=========================
+            FEATURES
+        ==========================*/
+
+        .feature-card {
+            background: white;
+            border-radius: 20px;
+            padding: 35px;
+            transition: .4s;
+            height: 100%;
+            box-shadow: 0 8px 25px rgba(0, 0, 0, .07);
+        }
+
+        .feature-card:hover {
+            transform: translateY(-10px);
+        }
+
+        .feature-icon {
+            width: 80px;
+            height: 80px;
+            background: rgba(13, 110, 253, .1);
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin-bottom: 25px;
+        }
+
+        .feature-icon i {
+            font-size: 36px;
+            color: #0d6efd;
+        }
+
+        .feature-card h4 {
+            font-weight: 700;
+            margin-bottom: 15px;
+        }
+
+        .feature-card p {
+            color: #666;
+            line-height: 1.8;
+        }
+
+        /*=========================
+            ABOUT
+        ==========================*/
+
+        .about-img img {
+            width: 100%;
+            border-radius: 20px;
+            box-shadow: 0 10px 35px rgba(0, 0, 0, .15);
+        }
+
+        .about-content h2 {
+            font-weight: 800;
+            margin-bottom: 20px;
+        }
+
+        .about-content p {
+            color: #666;
+            line-height: 1.9;
+            margin-bottom: 20px;
+        }
+
+        .about-list {
+            list-style: none;
+            padding-left: 0;
+        }
+
+        .about-list li {
+            margin-bottom: 15px;
+            color: #555;
+            font-weight: 500;
+        }
+
+        .about-list i {
+            color: #0d6efd;
+            margin-right: 12px;
+        }
+    </style>
+
+</head>
+
+<body>
+
+    <!-- =======================
+            NAVBAR
+    ======================== -->
+
+    <nav class="navbar navbar-expand-lg fixed-top">
+
+        <div class="container">
+
+            <a class="navbar-brand" href="#">
+                AI<span>Resume</span>
+            </a>
+
+            <button class="navbar-toggler"
+                data-bs-toggle="collapse"
+                data-bs-target="#menu">
+
+                <span class="navbar-toggler-icon"></span>
+
+            </button>
+
+            <div class="collapse navbar-collapse"
+                id="menu">
+
+                <ul class="navbar-nav ms-auto align-items-lg-center">
+
+                    <li class="nav-item">
+                        <a href="#home" class="nav-link">Home</a>
+                    </li>
+
+                    <li class="nav-item">
+                        <a href="#features" class="nav-link">Features</a>
+                    </li>
+
+                    <li class="nav-item">
+                        <a href="#about" class="nav-link">About</a>
+                    </li>
+
+                    <li class="nav-item">
+                        <a href="#contact" class="nav-link">Contact</a>
+                    </li>
+
+                    <li class="nav-item ms-lg-3">
+                        <a href="{% url 'login' %}" class="nav-link login-btn">
+                            Login
+                        </a>
+                    </li>
+
+                </ul>
+
+            </div>
+
+        </div>
+
+    </nav>
+
+    <!-- =======================
+            HERO SECTION
+    ======================== -->
+
+    <section class="hero" id="home">
+
+        <div class="container">
+
+            <div class="row align-items-center">
+
+                <div class="col-lg-7">
+
+                    <h1>
+                        AI Powered
+                        <span>Resume Screening</span>
+                        System
+                    </h1>
+
+                    <p>
+                        Upload your resume and get an instant ATS Score,
+                        Skill Analysis, Missing Keywords,
+                        AI Suggestions and Professional Resume Insights
+                        using Artificial Intelligence.
+                    </p>
+
+                    <div class="hero-btn">
+
+                        <a href="{% url 'register' %}"
+                            class="btn btn-main">
+                            Get Started
+                        </a>
+
+                        <a href="#features"
+                            class="btn btn-outline-light">
+                            Explore
+                        </a>
+
+                    </div>
+
+                </div>
+
+                <div class="col-lg-5">
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </section>
+
+    <!-- Part-1A End -->
+        <!-- =======================
+            STATS SECTION
+    ======================== -->
+
+    <section class="stats">
+
+        <div class="container">
+
+            <div class="row g-4">
+
+                <div class="col-lg-3 col-md-6">
+
+                    <div class="stat-card">
+
+                        <i class="bi bi-file-earmark-text"></i>
+
+                        <h2>10K+</h2>
+
+                        <p>Resumes Analyzed</p>
+
+                    </div>
+
+                </div>
+
+                <div class="col-lg-3 col-md-6">
+
+                    <div class="stat-card">
+
+                        <i class="bi bi-people-fill"></i>
+
+                        <h2>5000+</h2>
+
+                        <p>Happy Users</p>
+
+                    </div>
+
+                </div>
+
+                <div class="col-lg-3 col-md-6">
+
+                    <div class="stat-card">
+
+                        <i class="bi bi-bar-chart-line-fill"></i>
+
+                        <h2>98%</h2>
+
+                        <p>ATS Accuracy</p>
+
+                    </div>
+
+                </div>
+
+                <div class="col-lg-3 col-md-6">
+
+                    <div class="stat-card">
+
+                        <i class="bi bi-award-fill"></i>
+
+                        <h2>100+</h2>
+
+                        <p>Supported Skills</p>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </section>
+
+    <!-- =======================
+            FEATURES SECTION
+    ======================== -->
+
+    <section id="features">
+
+        <div class="container">
+
+            <div class="section-title">
+
+                <h2>Powerful Features</h2>
+
+                <p>
+
+                    Our AI Resume Screening System helps students,
+                    job seekers and professionals improve their resumes
+                    before applying to companies.
+
+                </p>
+
+            </div>
+
+            <div class="row g-4">
+
+                <div class="col-lg-4 col-md-6">
+
+                    <div class="feature-card">
+
+                        <div class="feature-icon">
+
+                            <i class="bi bi-cloud-arrow-up-fill"></i>
+
+                        </div>
+
+                        <h4>Resume Upload</h4>
+
+                        <p>
+
+                            Upload PDF resumes securely.
+                            The system extracts resume content
+                            automatically for AI analysis.
+
+                        </p>
+
+                    </div>
+
+                </div>
+
+                <div class="col-lg-4 col-md-6">
+
+                    <div class="feature-card">
+
+                        <div class="feature-icon">
+
+                            <i class="bi bi-cpu-fill"></i>
+
+                        </div>
+
+                        <h4>AI Analysis</h4>
+
+                        <p>
+
+                            Artificial Intelligence analyzes
+                            your resume, identifies keywords,
+                            technical skills and overall quality.
+
+                        </p>
+
+                    </div>
+
+                </div>
+
+                <div class="col-lg-4 col-md-6">
+
+                    <div class="feature-card">
+
+                        <div class="feature-icon">
+
+                            <i class="bi bi-speedometer2"></i>
+
+                        </div>
+
+                        <h4>ATS Score</h4>
+
+                        <p>
+
+                            Instantly receive an ATS compatibility
+                            score based on industry standards
+                            and resume optimization.
+
+                        </p>
+
+                    </div>
+
+                </div>
+
+                <div class="col-lg-4 col-md-6">
+
+                    <div class="feature-card">
+
+                        <div class="feature-icon">
+
+                            <i class="bi bi-check-circle-fill"></i>
+
+                        </div>
+
+                        <h4>Skill Detection</h4>
+
+                        <p>
+
+                            Detect technical and soft skills
+                            available in your resume with
+                            detailed reports.
+
+                        </p>
+
+                    </div>
+
+                </div>
+
+                <div class="col-lg-4 col-md-6">
+
+                    <div class="feature-card">
+
+                        <div class="feature-icon">
+
+                            <i class="bi bi-lightbulb-fill"></i>
+
+                        </div>
+
+                        <h4>AI Suggestions</h4>
+
+                        <p>
+
+                            Get intelligent recommendations
+                            to improve your resume and increase
+                            interview opportunities.
+
+                        </p>
+
+                    </div>
+
+                </div>
+
+                <div class="col-lg-4 col-md-6">
+
+                    <div class="feature-card">
+
+                        <div class="feature-icon">
+
+                            <i class="bi bi-file-earmark-pdf-fill"></i>
+
+                        </div>
+
+                        <h4>Download Report</h4>
+
+                        <p>
+
+                            Export ATS score,
+                            detected skills,
+                            missing skills and AI recommendations
+                            as a professional PDF report.
+
+                        </p>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </section>
+
+    <!-- =======================
+            ABOUT SECTION
+    ======================== -->
+
+    <section id="about">
+
+        <div class="container">
+
+            <div class="row align-items-center g-5">
+
+                <div class="col-lg-6">
+
+                    <div class="about-img">
+
+                        <img src="{% static 'images/about.jpg' %}"
+                             alt="About AI Resume">
+
+                    </div>
+
+                </div>
+
+                <div class="col-lg-6">
+
+                    <div class="about-content">
+
+                        <h2>
+                            Why Choose Our AI Resume Screening System?
+                        </h2>
+
+                        <p>
+
+                            Our platform uses Artificial Intelligence
+                            to analyze resumes within seconds.
+                            It helps candidates understand
+                            strengths, weaknesses and ATS compatibility
+                            before applying for jobs.
+
+                        </p>
+
+                        <ul class="about-list">
+
+                            <li>
+
+                                <i class="bi bi-check-circle-fill"></i>
+
+                                Fast Resume Analysis
+
+                            </li>
+
+                            <li>
+
+                                <i class="bi bi-check-circle-fill"></i>
+
+                                Accurate ATS Score
+
+                            </li>
+
+                            <li>
+
+                                <i class="bi bi-check-circle-fill"></i>
+
+                                Missing Skills Detection
+
+                            </li>
+
+                            <li>
+
+                                <i class="bi bi-check-circle-fill"></i>
+
+                                AI Career Suggestions
+
+                            </li>
+
+                            <li>
+
+                                <i class="bi bi-check-circle-fill"></i>
+
+                                Professional Dashboard
+
+                            </li>
+
+                        </ul>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </section>
+
+    <!-- Part-1B End -->
+        <!-- =======================
+            HOW IT WORKS
+    ======================== -->
+
+    <section id="workflow" class="py-5 bg-light">
+
+        <div class="container">
+
+            <div class="section-title">
+
+                <h2>How It Works</h2>
+
+                <p>
+                    Complete your resume evaluation in just a few simple steps.
+                </p>
+
+            </div>
+
+            <div class="row g-4">
+
+                <div class="col-lg-3 col-md-6">
+
+                    <div class="feature-card text-center">
+
+                        <div class="feature-icon mx-auto">
+                            <i class="bi bi-cloud-upload-fill"></i>
+                        </div>
+
+                        <h4>Upload Resume</h4>
+
+                        <p>
+                            Upload your PDF resume securely through the
+                            AI Resume Screening portal.
+                        </p>
+
+                    </div>
+
+                </div>
+
+                <div class="col-lg-3 col-md-6">
+
+                    <div class="feature-card text-center">
+
+                        <div class="feature-icon mx-auto">
+                            <i class="bi bi-search"></i>
+                        </div>
+
+                        <h4>AI Analysis</h4>
+
+                        <p>
+                            The AI extracts resume content and evaluates
+                            keywords, skills and ATS compatibility.
+                        </p>
+
+                    </div>
+
+                </div>
+
+                <div class="col-lg-3 col-md-6">
+
+                    <div class="feature-card text-center">
+
+                        <div class="feature-icon mx-auto">
+                            <i class="bi bi-bar-chart-fill"></i>
+                        </div>
+
+                        <h4>View Score</h4>
+
+                        <p>
+                            Instantly receive ATS Score,
+                            detected skills and missing skills report.
+                        </p>
+
+                    </div>
+
+                </div>
+
+                <div class="col-lg-3 col-md-6">
+
+                    <div class="feature-card text-center">
+
+                        <div class="feature-icon mx-auto">
+                            <i class="bi bi-download"></i>
+                        </div>
+
+                        <h4>Download Report</h4>
+
+                        <p>
+                            Export your professional ATS report
+                            in PDF format anytime.
+                        </p>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </section>
+
+    <!-- =======================
+            WHY ATS
+    ======================== -->
+
+    <section class="py-5">
+
+        <div class="container">
+
+            <div class="section-title">
+
+                <h2>Why ATS Score Matters?</h2>
+
+                <p>
+
+                    Most companies use Applicant Tracking Systems (ATS)
+                    to filter resumes before they reach recruiters.
+
+                </p>
+
+            </div>
+
+            <div class="row align-items-center g-5">
+
+                <div class="col-lg-6">
+
+                    <img src="{% static 'images/ats.png' %}"
+                         class="img-fluid rounded-4 shadow"
+                         alt="ATS">
+
+                </div>
+
+                <div class="col-lg-6">
+
+                    <h3 class="fw-bold mb-4">
+                        Increase Your Interview Chances
+                    </h3>
+
+                    <p class="text-muted">
+
+                        A higher ATS score increases the probability
+                        of your resume passing automated screening
+                        systems used by top companies.
+
+                    </p>
+
+                    <div class="mb-3">
+
+                        <h6>Keyword Matching</h6>
+
+                        <div class="progress" style="height:10px;">
+
+                            <div class="progress-bar bg-primary"
+                                 style="width:95%;"></div>
+
+                        </div>
+
+                    </div>
+
+                    <div class="mb-3">
+
+                        <h6>Resume Formatting</h6>
+
+                        <div class="progress" style="height:10px;">
+
+                            <div class="progress-bar bg-success"
+                                 style="width:90%;"></div>
+
+                        </div>
+
+                    </div>
+
+                    <div class="mb-3">
+
+                        <h6>Skills Matching</h6>
+
+                        <div class="progress" style="height:10px;">
+
+                            <div class="progress-bar bg-warning"
+                                 style="width:92%;"></div>
+
+                        </div>
+
+                    </div>
+
+                    <div>
+
+                        <h6>Overall Optimization</h6>
+
+                        <div class="progress" style="height:10px;">
+
+                            <div class="progress-bar bg-danger"
+                                 style="width:94%;"></div>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </section>
+
+    <!-- Part-1C End -->
+        <!-- =======================
+            TESTIMONIAL SECTION
+    ======================== -->
+
+    <section class="py-5 bg-light" id="testimonials">
+
+        <div class="container">
+
+            <div class="section-title">
+
+                <h2>What Our Users Say</h2>
+
+                <p>
+
+                    Thousands of students and professionals have improved
+                    their resumes using our AI Resume Screening System.
+
+                </p>
+
+            </div>
+
+            <div class="row g-4">
+
+                <div class="col-lg-4">
+
+                    <div class="feature-card text-center">
+
+                        <img src="{% static 'images/user1.jpg' %}"
+                             class="rounded-circle mb-3 shadow"
+                             width="100"
+                             height="100"
+                             alt="User">
+
+                        <h5>Rahul Kumar</h5>
+
+                        <small class="text-primary">
+                            Software Engineer
+                        </small>
+
+                        <p class="mt-3">
+
+                            "The ATS score helped me improve my resume.
+                            I received interview calls within a week."
+
+                        </p>
+
+                        <div class="text-warning">
+
+                            <i class="bi bi-star-fill"></i>
+                            <i class="bi bi-star-fill"></i>
+                            <i class="bi bi-star-fill"></i>
+                            <i class="bi bi-star-fill"></i>
+                            <i class="bi bi-star-fill"></i>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+                <div class="col-lg-4">
+
+                    <div class="feature-card text-center">
+
+                        <img src="{% static 'images/user2.jpg' %}"
+                             class="rounded-circle mb-3 shadow"
+                             width="100"
+                             height="100"
+                             alt="User">
+
+                        <h5>Priya Sharma</h5>
+
+                        <small class="text-success">
+                            Data Analyst
+                        </small>
+
+                        <p class="mt-3">
+
+                            "AI suggestions were very useful.
+                            Missing skills detection made my resume
+                            much stronger."
+
+                        </p>
+
+                        <div class="text-warning">
+
+                            <i class="bi bi-star-fill"></i>
+                            <i class="bi bi-star-fill"></i>
+                            <i class="bi bi-star-fill"></i>
+                            <i class="bi bi-star-fill"></i>
+                            <i class="bi bi-star-fill"></i>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+                <div class="col-lg-4">
+
+                    <div class="feature-card text-center">
+
+                        <img src="{% static 'images/user3.jpg' %}"
+                             class="rounded-circle mb-3 shadow"
+                             width="100"
+                             height="100"
+                             alt="User">
+
+                        <h5>Ankit Verma</h5>
+
+                        <small class="text-danger">
+                            Full Stack Developer
+                        </small>
+
+                        <p class="mt-3">
+
+                            "Professional dashboard,
+                            PDF reports and ATS analysis
+                            are simply outstanding."
+
+                        </p>
+
+                        <div class="text-warning">
+
+                            <i class="bi bi-star-fill"></i>
+                            <i class="bi bi-star-fill"></i>
+                            <i class="bi bi-star-fill"></i>
+                            <i class="bi bi-star-fill"></i>
+                            <i class="bi bi-star-fill"></i>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </section>
+
+    <!-- =======================
+            CALL TO ACTION
+    ======================== -->
+
+    <section class="py-5 text-white"
+             style="background:linear-gradient(135deg,#0d6efd,#6610f2);">
+
+        <div class="container">
+
+            <div class="row align-items-center">
+
+                <div class="col-lg-8">
+
+                    <h2 class="fw-bold">
+
+                        Ready to Improve Your Resume?
+
+                    </h2>
+
+                    <p class="mb-0 mt-3">
+
+                        Join thousands of job seekers using
+                        AI Resume Screening System to increase
+                        their ATS score and interview chances.
+
+                    </p>
+
+                </div>
+
+                <div class="col-lg-4 text-lg-end mt-4 mt-lg-0">
+
+                    <a href="{% url 'register' %}"
+                       class="btn btn-light btn-lg px-5">
+
+                        Get Started
+
+                    </a>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </section>
+
+    <!-- =======================
+            CONTACT SECTION
+    ======================== -->
+
+    <section id="contact">
+
+        <div class="container">
+
+            <div class="section-title">
+
+                <h2>Contact Us</h2>
+
+                <p>
+
+                    Have questions or feedback?
+                    We'd love to hear from you.
+
+                </p>
+
+            </div>
+
+            <div class="row">
+
+                <div class="col-lg-7">
+
+                    <form method="post">
+
+                        {% csrf_token %}
+
+                        <div class="row">
+
+                            <div class="col-md-6 mb-3">
+
+                                <input type="text"
+                                       class="form-control"
+                                       name="name"
+                                       placeholder="Your Name"
+                                       required>
+
+                            </div>
+
+                            <div class="col-md-6 mb-3">
+
+                                <input type="email"
+                                       class="form-control"
+                                       name="email"
+                                       placeholder="Email Address"
+                                       required>
+
+                            </div>
+
+                        </div>
+
+                        <div class="mb-3">
+
+                            <input type="text"
+                                   class="form-control"
+                                   name="subject"
+                                   placeholder="Subject">
+
+                        </div>
+
+                        <div class="mb-3">
+
+                            <textarea
+                                class="form-control"
+                                rows="6"
+                                name="message"
+                                placeholder="Write your message..."
+                                required></textarea>
+
+                        </div>
+
+                        <button class="btn btn-primary px-5">
+
+                            Send Message
+
+                        </button>
+
+                    </form>
+
+                </div>
+
+                <div class="col-lg-5 mt-5 mt-lg-0">
+
+                    <div class="feature-card h-100">
+
+                        <h4 class="mb-4">
+
+                            Contact Information
+
+                        </h4>
+
+                        <p>
+
+                            <i class="bi bi-envelope-fill text-primary me-2"></i>
+
+                            support@airesume.com
+
+                        </p>
+
+                        <p>
+
+                            <i class="bi bi-telephone-fill text-primary me-2"></i>
+
+                            +91 9876543210
+
+                        </p>
+
+                        <p>
+
+                            <i class="bi bi-geo-alt-fill text-primary me-2"></i>
+
+                            Bhubaneswar, Odisha, India
+
+                        </p>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </section>
+
+    <!-- Part-1D End -->
+        <!-- =======================
+            FOOTER
+    ======================== -->
+
+    <footer class="bg-dark text-light pt-5 pb-3">
+
+        <div class="container">
+
+            <div class="row g-4">
+
+                <!-- About -->
+
+                <div class="col-lg-4">
+
+                    <h3 class="fw-bold mb-3">
+                        AI<span class="text-primary">Resume</span>
+                    </h3>
+
+                    <p class="text-secondary">
+
+                        AI Resume Screening System helps students,
+                        freshers and professionals improve their resumes
+                        with ATS Score, Skill Detection,
+                        AI Suggestions and Resume Analytics.
+
+                    </p>
+
+                    <div class="mt-4">
+
+                        <a href="#" class="text-light me-3 fs-4">
+                            <i class="bi bi-facebook"></i>
+                        </a>
+
+                        <a href="#" class="text-light me-3 fs-4">
+                            <i class="bi bi-instagram"></i>
+                        </a>
+
+                        <a href="#" class="text-light me-3 fs-4">
+                            <i class="bi bi-linkedin"></i>
+                        </a>
+
+                        <a href="#" class="text-light fs-4">
+                            <i class="bi bi-github"></i>
+                        </a>
+
+                    </div>
+
+                </div>
+
+                <!-- Quick Links -->
+
+                <div class="col-lg-2 col-md-6">
+
+                    <h5 class="mb-3">
+                        Quick Links
+                    </h5>
+
+                    <ul class="list-unstyled">
+
+                        <li class="mb-2">
+                            <a href="#home" class="text-secondary text-decoration-none">
+                                Home
+                            </a>
+                        </li>
+
+                        <li class="mb-2">
+                            <a href="#features" class="text-secondary text-decoration-none">
+                                Features
+                            </a>
+                        </li>
+
+                        <li class="mb-2">
+                            <a href="#about" class="text-secondary text-decoration-none">
+                                About
+                            </a>
+                        </li>
+
+                        <li class="mb-2">
+                            <a href="#workflow" class="text-secondary text-decoration-none">
+                                Workflow
+                            </a>
+                        </li>
+
+                        <li class="mb-2">
+                            <a href="#contact" class="text-secondary text-decoration-none">
+                                Contact
+                            </a>
+                        </li>
+
+                    </ul>
+
+                </div>
+
+                <!-- Services -->
+
+                <div class="col-lg-3 col-md-6">
+
+                    <h5 class="mb-3">
+                        Services
+                    </h5>
+
+                    <ul class="list-unstyled">
+
+                        <li class="mb-2 text-secondary">
+                            Resume Screening
+                        </li>
+
+                        <li class="mb-2 text-secondary">
+                            ATS Score
+                        </li>
+
+                        <li class="mb-2 text-secondary">
+                            Skill Analysis
+                        </li>
+
+                        <li class="mb-2 text-secondary">
+                            AI Suggestions
+                        </li>
+
+                        <li class="mb-2 text-secondary">
+                            PDF Report
+                        </li>
+
+                    </ul>
+
+                </div>
+
+                <!-- Newsletter -->
+
+                <div class="col-lg-3">
+
+                    <h5 class="mb-3">
+
+                        Newsletter
+
+                    </h5>
+
+                    <p class="text-secondary">
+
+                        Subscribe to receive latest updates
+                        and AI Resume tips.
+
+                    </p>
+
+                    <form>
+
+                        <div class="input-group">
+
+                            <input type="email"
+                                   class="form-control"
+                                   placeholder="Enter Email">
+
+                            <button class="btn btn-primary">
+
+                                Subscribe
+
+                            </button>
+
+                        </div>
+
+                    </form>
+
+                </div>
+
+            </div>
+
+            <hr class="border-secondary my-4">
+
+            <div class="row align-items-center">
+
+                <div class="col-md-6">
+
+                    <p class="mb-0 text-secondary">
+
+                        © 2026 AI Resume Screening System.
+                        All Rights Reserved.
+
+                    </p>
+
+                </div>
+
+                <div class="col-md-6 text-md-end mt-3 mt-md-0">
+
+                    <a href="#"
+                       class="text-secondary text-decoration-none me-3">
+
+                        Privacy Policy
+
+                    </a>
+
+                    <a href="#"
+                       class="text-secondary text-decoration-none me-3">
+
+                        Terms & Conditions
+
+                    </a>
+
+                    <a href="#"
+                       class="text-secondary text-decoration-none">
+
+                        Support
+
+                    </a>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </footer>
+
+    <!-- =======================
+            BACK TO TOP
+    ======================== -->
+
+    <button id="topBtn"
+            class="btn btn-primary rounded-circle shadow"
+            style="
+                position:fixed;
+                bottom:25px;
+                right:25px;
+                width:55px;
+                height:55px;
+                display:none;
+                z-index:999;
+            ">
+
+        <i class="bi bi-arrow-up"></i>
+
+    </button>
+
+    <!-- Bootstrap JS -->
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+
+    <script>
+
+        const topBtn = document.getElementById("topBtn");
+
+        window.onscroll = function () {
+
+            if (document.body.scrollTop > 300 ||
+                document.documentElement.scrollTop > 300) {
+
+                topBtn.style.display = "block";
+
+            }
+
+            else {
+
+                topBtn.style.display = "none";
+
+            }
+
+        };
+
+        topBtn.onclick = function () {
+
+            window.scrollTo({
+
+                top: 0,
+
+                behavior: "smooth"
+
+            });
+
+        };
+
+    </script>
+
+</body>
+
+</html>

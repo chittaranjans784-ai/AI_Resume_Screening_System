@@ -1,0 +1,894 @@
+{% extends "admin/base.html" %}
+{% load static %}
+
+{% block title %}
+Manage Resume | AI Resume Screening
+{% endblock %}
+
+{% block content %}
+
+<div class="container-fluid py-4">
+
+    <!-- Page Header -->
+    <div class="d-flex flex-wrap justify-content-between align-items-center mb-4">
+
+        <div>
+            <h2 class="fw-bold mb-1">
+                <i class="bi bi-file-earmark-text-fill text-primary me-2"></i>
+                Manage Resume
+            </h2>
+
+            <p class="text-muted mb-0">
+                View, search, manage and monitor all uploaded resumes.
+            </p>
+        </div>
+
+        <div class="mt-3 mt-lg-0">
+
+            <button class="btn btn-success me-2">
+                <i class="bi bi-file-earmark-excel"></i>
+                Export Excel
+            </button>
+
+            <button class="btn btn-danger">
+                <i class="bi bi-file-earmark-pdf"></i>
+                Export PDF
+            </button>
+
+        </div>
+
+    </div>
+
+    <!-- Statistics -->
+
+    <div class="row g-4 mb-4">
+
+        <div class="col-xl-3 col-md-6">
+
+            <div class="card shadow-sm border-0 rounded-4">
+
+                <div class="card-body">
+
+                    <div class="d-flex justify-content-between">
+
+                        <div>
+
+                            <h6 class="text-muted">
+                                Total Resume
+                            </h6>
+
+                            <h3 class="fw-bold">
+                                {{ resumes|length }}
+                            </h3>
+
+                        </div>
+
+                        <div class="icon-circle bg-primary">
+
+                            <i class="bi bi-file-earmark-text text-white fs-3"></i>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+        <div class="col-xl-3 col-md-6">
+
+            <div class="card shadow-sm border-0 rounded-4">
+
+                <div class="card-body">
+
+                    <div class="d-flex justify-content-between">
+
+                        <div>
+
+                            <h6 class="text-muted">
+                                Average ATS
+                            </h6>
+
+                            <h3 class="fw-bold">
+                                {{ average_score|default:"0" }}%
+                            </h3>
+
+                        </div>
+
+                        <div class="icon-circle bg-success">
+
+                            <i class="bi bi-bar-chart-fill text-white fs-3"></i>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+        <div class="col-xl-3 col-md-6">
+
+            <div class="card shadow-sm border-0 rounded-4">
+
+                <div class="card-body">
+
+                    <div class="d-flex justify-content-between">
+
+                        <div>
+
+                            <h6 class="text-muted">
+                                Highest ATS
+                            </h6>
+
+                            <h3 class="fw-bold">
+                                {{ highest_score|default:"0" }}%
+                            </h3>
+
+                        </div>
+
+                        <div class="icon-circle bg-warning">
+
+                            <i class="bi bi-trophy-fill text-white fs-3"></i>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+        <div class="col-xl-3 col-md-6">
+
+            <div class="card shadow-sm border-0 rounded-4">
+
+                <div class="card-body">
+
+                    <div class="d-flex justify-content-between">
+
+                        <div>
+
+                            <h6 class="text-muted">
+                                Excellent Resume
+                            </h6>
+
+                            <h3 class="fw-bold">
+                                {{ excellent_count|default:"0" }}
+                            </h3>
+
+                        </div>
+
+                        <div class="icon-circle bg-info">
+
+                            <i class="bi bi-award-fill text-white fs-3"></i>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+    <!-- Search -->
+
+    <div class="card border-0 shadow-sm rounded-4 mb-4">
+
+        <div class="card-body">
+
+            <form method="GET">
+
+                <div class="row g-3">
+
+                    <div class="col-lg-5">
+
+                        <input
+                            type="text"
+                            class="form-control"
+                            name="search"
+                            placeholder="Search by Name, Email, Skill..."
+                            value="{{ request.GET.search }}"
+                        >
+
+                    </div>
+
+                    <div class="col-lg-3">
+
+                        <select class="form-select" name="score">
+
+                            <option value="">
+                                ATS Score
+                            </option>
+
+                            <option value="90">
+                                90%+
+                            </option>
+
+                            <option value="80">
+                                80%+
+                            </option>
+
+                            <option value="70">
+                                70%+
+                            </option>
+
+                            <option value="60">
+                                60%+
+                            </option>
+
+                        </select>
+
+                    </div>
+
+                    <div class="col-lg-2">
+
+                        <button class="btn btn-primary w-100">
+
+                            <i class="bi bi-search"></i>
+
+                            Search
+
+                        </button>
+
+                    </div>
+
+                    <div class="col-lg-2">
+
+                        <a href="" class="btn btn-outline-secondary w-100">
+
+                            <i class="bi bi-arrow-clockwise"></i>
+
+                            Reset
+
+                        </a>
+
+                    </div>
+
+                </div>
+
+            </form>
+
+        </div>
+
+    </div>
+
+    <!-- Resume Table -->
+
+    <div class="card border-0 shadow rounded-4">
+
+        <div class="card-header bg-white py-3">
+
+            <h5 class="fw-bold mb-0">
+
+                <i class="bi bi-folder2-open me-2 text-primary"></i>
+
+                Uploaded Resume List
+
+            </h5>
+
+        </div>
+
+        <div class="table-responsive">
+
+            <table class="table table-hover align-middle mb-0">
+
+                <thead class="table-light">
+
+                    <tr>
+
+                        <th>#</th>
+
+                        <th>User</th>
+
+                        <th>Email</th>
+
+                        <th>Resume</th>
+
+                        <th>ATS Score</th>
+
+                        <th>Uploaded</th>
+
+                        <th class="text-center">
+                            Actions
+                        </th>
+
+                    </tr>
+
+                </thead>
+
+                <tbody>
+
+                {% for resume in resumes %}
+
+                    <tr>
+
+                        <td>
+
+                            {{ forloop.counter }}
+
+                        </td>
+
+                        <td>
+
+                            <div class="d-flex align-items-center">
+
+                                {% if resume.user.profile_photo %}
+
+                                <img
+                                    src="{{ resume.user.profile_photo.url }}"
+                                    class="rounded-circle me-3"
+                                    width="45"
+                                    height="45"
+                                    style="object-fit:cover;"
+                                >
+
+                                {% else %}
+
+                                <img
+                                    src="{% static 'images/default.png' %}"
+                                    class="rounded-circle me-3"
+                                    width="45"
+                                    height="45"
+                                    style="object-fit:cover;"
+                                >
+
+                                {% endif %}
+
+                                <div>
+
+                                    <h6 class="mb-0">
+
+                                        {{ resume.user.fullname }}
+
+                                    </h6>
+
+                                    <small class="text-muted">
+
+                                        ID :
+                                        {{ resume.user.id }}
+
+                                    </small>
+
+                                </div>
+
+                            </div>
+
+                        </td>
+
+                        <td>
+
+                            {{ resume.user.email }}
+
+                        </td>
+
+                        <td>
+
+                            <span class="badge bg-secondary">
+
+                                {{ resume.resume.name|cut:"resume/" }}
+
+                            </span>
+
+                        </td>
+
+                        <td>
+                                                        {% if resume.ats_score >= 90 %}
+
+                            <span class="badge bg-success px-3 py-2">
+                                {{ resume.ats_score }}%
+                            </span>
+
+                            {% elif resume.ats_score >= 75 %}
+
+                            <span class="badge bg-primary px-3 py-2">
+                                {{ resume.ats_score }}%
+                            </span>
+
+                            {% elif resume.ats_score >= 60 %}
+
+                            <span class="badge bg-warning text-dark px-3 py-2">
+                                {{ resume.ats_score }}%
+                            </span>
+
+                            {% else %}
+
+                            <span class="badge bg-danger px-3 py-2">
+                                {{ resume.ats_score }}%
+                            </span>
+
+                            {% endif %}
+                        </td>
+
+                        <td>
+
+                            {{ resume.uploaded_at|date:"d M Y" }}
+
+                            <br>
+
+                            <small class="text-muted">
+
+                                {{ resume.uploaded_at|time:"h:i A" }}
+
+                            </small>
+
+                        </td>
+
+                        <td class="text-center">
+
+                            <div class="btn-group">
+
+                                <a href="{{ resume.resume.url }}"
+                                   target="_blank"
+                                   class="btn btn-sm btn-outline-primary"
+                                   title="Preview">
+
+                                    <i class="bi bi-eye-fill"></i>
+
+                                </a>
+
+                                <a href="{{ resume.resume.url }}"
+                                   download
+                                   class="btn btn-sm btn-outline-success"
+                                   title="Download">
+
+                                    <i class="bi bi-download"></i>
+
+                                </a>
+
+                                <button
+                                        class="btn btn-sm btn-outline-info"
+                                        data-bs-toggle="modal"
+                                        data-bs-target="#resumeModal{{ resume.id }}"
+                                        title="Resume Details">
+
+                                    <i class="bi bi-file-earmark-text-fill"></i>
+
+                                </button>
+
+                                <a href="{% url 'delete_resume_admin' resume.id %}"
+                                   class="btn btn-sm btn-outline-danger"
+                                   onclick="return confirm('Delete this resume?')"
+                                   title="Delete">
+
+                                    <i class="bi bi-trash-fill"></i>
+
+                                </a>
+
+                            </div>
+
+                        </td>
+
+                    </tr>
+
+                    <!-- Resume Modal -->
+
+                    <div class="modal fade"
+                         id="resumeModal{{ resume.id }}"
+                         tabindex="-1">
+
+                        <div class="modal-dialog modal-xl modal-dialog-scrollable">
+
+                            <div class="modal-content">
+
+                                <div class="modal-header">
+
+                                    <h5 class="modal-title">
+
+                                        Resume Details
+
+                                    </h5>
+
+                                    <button
+                                            class="btn-close"
+                                            data-bs-dismiss="modal">
+                                    </button>
+
+                                </div>
+
+                                <div class="modal-body">
+
+                                    <div class="row">
+
+                                        <div class="col-lg-4">
+
+                                            <div class="card border-0 shadow-sm">
+
+                                                <div class="card-body text-center">
+
+                                                    {% if resume.user.profile_photo %}
+
+                                                    <img src="{{ resume.user.profile_photo.url }}"
+                                                         class="rounded-circle mb-3"
+                                                         width="110"
+                                                         height="110"
+                                                         style="object-fit:cover;">
+
+                                                    {% else %}
+
+                                                    <img src="{% static 'images/default.png' %}"
+                                                         class="rounded-circle mb-3"
+                                                         width="110"
+                                                         height="110">
+
+                                                    {% endif %}
+
+                                                    <h5>
+
+                                                        {{ resume.user.fullname }}
+
+                                                    </h5>
+
+                                                    <p class="text-muted">
+
+                                                        {{ resume.user.email }}
+
+                                                    </p>
+
+                                                    <hr>
+
+                                                    <p>
+
+                                                        <strong>ATS Score :</strong>
+
+                                                        {{ resume.ats_score }}%
+
+                                                    </p>
+
+                                                    <p>
+
+                                                        <strong>Uploaded :</strong>
+
+                                                        {{ resume.uploaded_at|date:"d M Y h:i A" }}
+
+                                                    </p>
+
+                                                </div>
+
+                                            </div>
+
+                                        </div>
+
+                                        <div class="col-lg-8">
+
+                                            <div class="card border-0 shadow-sm mb-3">
+
+                                                <div class="card-header bg-primary text-white">
+
+                                                    Skills Found
+
+                                                </div>
+
+                                                <div class="card-body">
+
+                                                    {{ resume.skills_found|default:"No skills available."|linebreaks }}
+
+                                                </div>
+
+                                            </div>
+
+                                            <div class="card border-0 shadow-sm mb-3">
+
+                                                <div class="card-header bg-danger text-white">
+
+                                                    Missing Skills
+
+                                                </div>
+
+                                                <div class="card-body">
+
+                                                    {{ resume.missing_skills|default:"No missing skills."|linebreaks }}
+
+                                                </div>
+
+                                            </div>
+
+                                            <div class="card border-0 shadow-sm">
+
+                                                <div class="card-header bg-success text-white">
+
+                                                    AI Suggestion
+
+                                                </div>
+
+                                                <div class="card-body">
+
+                                                    {{ resume.ai_suggestion|default:"No suggestion available."|linebreaks }}
+
+                                                </div>
+
+                                            </div>
+
+                                        </div>
+
+                                    </div>
+
+                                </div>
+
+                                <div class="modal-footer">
+
+                                    <a href="{{ resume.resume.url }}"
+                                       target="_blank"
+                                       class="btn btn-primary">
+
+                                        <i class="bi bi-eye-fill"></i>
+
+                                        Preview
+
+                                    </a>
+
+                                    <a href="{{ resume.resume.url }}"
+                                       download
+                                       class="btn btn-success">
+
+                                        <i class="bi bi-download"></i>
+
+                                        Download
+
+                                    </a>
+
+                                    <button class="btn btn-secondary"
+                                            data-bs-dismiss="modal">
+
+                                        Close
+
+                                    </button>
+
+                                </div>
+
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                {% empty %}
+
+                    <tr>
+
+                        <td colspan="7" class="text-center py-5">
+
+                            <img src="{% static 'images/empty_resume.svg' %}"
+                                 width="170"
+                                 class="mb-3">
+
+                            <h5 class="fw-bold">
+
+                                No Resume Found
+
+                            </h5>
+
+                            <p class="text-muted">
+
+                                There are no uploaded resumes available.
+
+                            </p>
+
+                        </td>
+
+                    </tr>
+
+                {% endfor %}
+
+                </tbody>
+
+            </table>
+
+        </div>
+
+    </div>
+        <!-- Pagination -->
+
+    {% if resumes.has_other_pages %}
+
+    <nav class="mt-4">
+
+        <ul class="pagination justify-content-center">
+
+            {% if resumes.has_previous %}
+
+            <li class="page-item">
+
+                <a class="page-link"
+                   href="?page={{ resumes.previous_page_number }}{% if request.GET.search %}&search={{ request.GET.search }}{% endif %}{% if request.GET.score %}&score={{ request.GET.score }}{% endif %}">
+
+                    <i class="bi bi-chevron-left"></i>
+
+                </a>
+
+            </li>
+
+            {% else %}
+
+            <li class="page-item disabled">
+
+                <span class="page-link">
+
+                    <i class="bi bi-chevron-left"></i>
+
+                </span>
+
+            </li>
+
+            {% endif %}
+
+            {% for num in resumes.paginator.page_range %}
+
+                {% if resumes.number == num %}
+
+                    <li class="page-item active">
+
+                        <span class="page-link">
+
+                            {{ num }}
+
+                        </span>
+
+                    </li>
+
+                {% elif num > resumes.number|add:"-3" and num < resumes.number|add:"3" %}
+
+                    <li class="page-item">
+
+                        <a class="page-link"
+                           href="?page={{ num }}{% if request.GET.search %}&search={{ request.GET.search }}{% endif %}{% if request.GET.score %}&score={{ request.GET.score }}{% endif %}">
+
+                            {{ num }}
+
+                        </a>
+
+                    </li>
+
+                {% endif %}
+
+            {% endfor %}
+
+            {% if resumes.has_next %}
+
+            <li class="page-item">
+
+                <a class="page-link"
+                   href="?page={{ resumes.next_page_number }}{% if request.GET.search %}&search={{ request.GET.search }}{% endif %}{% if request.GET.score %}&score={{ request.GET.score }}{% endif %}">
+
+                    <i class="bi bi-chevron-right"></i>
+
+                </a>
+
+            </li>
+
+            {% else %}
+
+            <li class="page-item disabled">
+
+                <span class="page-link">
+
+                    <i class="bi bi-chevron-right"></i>
+
+                </span>
+
+            </li>
+
+            {% endif %}
+
+        </ul>
+
+    </nav>
+
+    {% endif %}
+
+</div>
+
+<style>
+
+.icon-circle{
+    width:65px;
+    height:65px;
+    border-radius:50%;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+}
+
+.table th{
+    white-space:nowrap;
+    font-weight:600;
+}
+
+.table td{
+    vertical-align:middle;
+}
+
+.card{
+    border-radius:18px;
+}
+
+.modal-content{
+    border:none;
+    border-radius:20px;
+}
+
+.modal-header{
+    border-bottom:1px solid #ececec;
+}
+
+.modal-footer{
+    border-top:1px solid #ececec;
+}
+
+.page-link{
+    border-radius:10px;
+    margin:0 3px;
+}
+
+.badge{
+    font-size:.85rem;
+}
+
+.btn-group .btn{
+    padding:7px 12px;
+}
+
+.card-header{
+    font-weight:600;
+}
+
+@media(max-width:991px){
+
+    .btn-group{
+        display:flex;
+        flex-wrap:wrap;
+        gap:5px;
+    }
+
+    .btn-group .btn{
+        border-radius:8px !important;
+    }
+
+}
+
+@media(max-width:768px){
+
+    .icon-circle{
+        width:55px;
+        height:55px;
+    }
+
+    .icon-circle i{
+        font-size:1.4rem !important;
+    }
+
+    .table{
+        min-width:1000px;
+    }
+
+}
+
+</style>
+
+<script>
+
+document.addEventListener("DOMContentLoaded",function(){
+
+    const search=document.querySelector("input[name='search']");
+
+    if(search){
+
+        search.focus();
+
+    }
+
+});
+
+</script>
+
+{% endblock %}

@@ -1,0 +1,402 @@
+{% extends "admin/base.html" %}
+{% load static %}
+
+{% block title %}
+View User | AI Resume Screening
+{% endblock %}
+
+{% block page_title %}
+View User
+{% endblock %}
+
+{% block content %}
+
+<div class="container-fluid">
+
+    <!-- Page Header -->
+
+    <div class="row mb-4">
+
+        <div class="col-lg-8">
+
+            <h2 class="fw-bold">
+
+                <i class="bi bi-person-vcard-fill text-primary"></i>
+
+                User Details
+
+            </h2>
+
+            <p class="text-muted mb-0">
+
+                View complete information of the selected user.
+
+            </p>
+
+        </div>
+
+        <div class="col-lg-4 text-lg-end mt-3 mt-lg-0">
+
+            <a href="{% url 'manage_users' %}"
+               class="btn btn-outline-primary">
+
+                <i class="bi bi-arrow-left-circle"></i>
+
+                Back to Users
+
+            </a>
+
+        </div>
+
+    </div>
+
+    <!-- Profile Card -->
+
+    <div class="row g-4">
+
+        <div class="col-xl-4">
+
+            <div class="card border-0 shadow rounded-4">
+
+                <div class="card-body text-center p-5">
+
+                    {% if user.profile_photo %}
+
+                    <img src="{{ user.profile_photo.url }}"
+                         class="rounded-circle shadow mb-4"
+                         width="170"
+                         height="170"
+                         style="object-fit:cover;">
+
+                    {% else %}
+
+                    <img src="{% static 'images/default.png' %}"
+                         class="rounded-circle shadow mb-4"
+                         width="170"
+                         height="170"
+                         style="object-fit:cover;">
+
+                    {% endif %}
+
+                    <h3 class="fw-bold">
+
+                        {{ user.fullname }}
+
+                    </h3>
+
+                    <p class="text-muted mb-3">
+
+                        {{ user.email }}
+
+                    </p>
+
+                    {% if user.is_admin %}
+
+                    <span class="badge bg-success px-4 py-2">
+
+                        <i class="bi bi-shield-check"></i>
+
+                        Administrator
+
+                    </span>
+
+                    {% else %}
+
+                    <span class="badge bg-primary px-4 py-2">
+
+                        <i class="bi bi-person-fill"></i>
+
+                        Registered User
+
+                    </span>
+
+                    {% endif %}
+
+                    <hr class="my-4">
+
+                    <div class="row text-center">
+
+                        <div class="col-6">
+
+                            <h4 class="fw-bold text-primary">
+
+                                {{ user.resume_set.count }}
+
+                            </h4>
+
+                            <small class="text-muted">
+
+                                Resumes
+
+                            </small>
+
+                        </div>
+
+                        <div class="col-6">
+
+                            <h4 class="fw-bold text-success">
+
+                                {{ user.id }}
+
+                            </h4>
+
+                            <small class="text-muted">
+
+                                User ID
+
+                            </small>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+        <!-- User Information -->
+
+        <div class="col-xl-8">
+
+            <div class="card border-0 shadow rounded-4">
+
+                <div class="card-header bg-white py-3">
+
+                    <h5 class="fw-bold mb-0">
+
+                        <i class="bi bi-person-lines-fill"></i>
+
+                        Personal Information
+
+                    </h5>
+
+                </div>
+
+                <div class="card-body">
+
+                    <div class="row g-4">
+
+                        <div class="col-md-6">
+
+                            <label class="form-label fw-semibold">
+
+                                Full Name
+
+                            </label>
+
+                            <div class="form-control bg-light">
+
+                                {{ user.fullname }}
+
+                            </div>
+
+                        </div>
+
+                        <div class="col-md-6">
+
+                            <label class="form-label fw-semibold">
+
+                                Email Address
+
+                            </label>
+
+                            <div class="form-control bg-light">
+
+                                {{ user.email }}
+
+                            </div>
+
+                        </div>
+
+                        <div class="col-md-6">
+
+                            <label class="form-label fw-semibold">
+
+                                Role
+
+                            </label>
+
+                            <div class="form-control bg-light">
+
+                                {% if user.is_admin %}
+
+                                    Administrator
+
+                                {% else %}
+
+                                    User
+
+                                {% endif %}
+
+                            </div>
+
+                        </div>
+
+                        <div class="col-md-6">
+
+                            <label class="form-label fw-semibold">
+
+                                Total Resume Uploaded
+
+                            </label>
+
+                            <div class="form-control bg-light">
+
+                                {{ user.resume_set.count }}
+
+                            </div>
+
+                        </div>
+
+                        <div class="col-md-6">
+
+                            <label class="form-label fw-semibold">
+
+                                Joined On
+
+                            </label>
+
+                            <div class="form-control bg-light">
+
+                                {% if user.created_at %}
+
+                                    {{ user.created_at|date:"d M Y, h:i A" }}
+
+                                {% else %}
+
+                                    Not Available
+
+                                {% endif %}
+
+                            </div>
+
+                        </div>
+
+                        <div class="col-md-6">
+
+                            <label class="form-label fw-semibold">
+
+                                Account Status
+
+                            </label>
+
+                            <div class="form-control bg-light text-success">
+
+                                Active
+
+                            </div>
+
+                        </div>
+
+                        <div class="col-12">
+
+                            <hr>
+
+                        </div>
+
+                        <div class="col-12 d-flex flex-wrap gap-3">
+                                                        <a href="{% url 'edit_user' user.id %}"
+                               class="btn btn-primary px-4">
+
+                                <i class="bi bi-pencil-square"></i>
+
+                                Edit User
+
+                            </a>
+
+                            <a href="{% url 'manage_users' %}"
+                               class="btn btn-outline-secondary px-4">
+
+                                <i class="bi bi-arrow-left-circle"></i>
+
+                                Back
+
+                            </a>
+
+                            {% if not user.is_admin %}
+
+                            <a href="{% url 'delete_user' user.id %}"
+                               class="btn btn-danger px-4"
+                               onclick="return confirm('Are you sure you want to delete this user?');">
+
+                                <i class="bi bi-trash-fill"></i>
+
+                                Delete User
+
+                            </a>
+
+                            {% endif %}
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+<style>
+
+.card{
+    border-radius:20px;
+}
+
+.card-header{
+    border-radius:20px 20px 0 0 !important;
+}
+
+.form-control{
+    min-height:50px;
+    display:flex;
+    align-items:center;
+    border-radius:12px;
+}
+
+.badge{
+    font-size:.9rem;
+}
+
+img{
+    border:5px solid #ffffff;
+}
+
+.btn{
+    border-radius:10px;
+}
+
+@media(max-width:992px){
+
+    .card-body{
+        padding:2rem;
+    }
+
+}
+
+@media(max-width:768px){
+
+    .card-body{
+        padding:1.5rem;
+    }
+
+    img{
+        width:130px;
+        height:130px;
+    }
+
+    .btn{
+        width:100%;
+    }
+
+}
+
+</style>
+
+{% endblock %}

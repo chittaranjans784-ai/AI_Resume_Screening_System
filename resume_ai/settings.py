@@ -27,8 +27,8 @@ SECRET_KEY = os.environ.get(
     "django-insecure-4!k5wygzki8@$cyk5@fa)_dhlke76n8p3d9plix&hw6bg)v@*$"
 )
 
-# DEBUG = os.environ.get("DEBUG", "False") == "True"
-DEBUG = True
+DEBUG = os.environ.get("DEBUG", "False") == "True"
+# DEBUG = True
 # DEBUG = False
 
 ALLOWED_HOSTS = ["*"]
@@ -123,7 +123,7 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/4.2/howto/static-files/
 
 
-STATIC_URL = "static/"
+STATIC_URL = "/static/"
 
 STATICFILES_DIRS = [
     BASE_DIR / "resume" / "static",

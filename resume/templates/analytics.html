@@ -321,7 +321,11 @@ Resume Performance Insights
 
 <div class="user-box">
 
-<img src="{{ user.profile_photo.url }}" alt="Profile">
+{% if user.profile_photo %}
+    <img src="{{ user.profile_photo.url }}" alt="Profile">
+{% else %}
+    <img src="{% static 'images/default.png' %}" alt="Profile">
+{% endif %}
 
 <div>
 

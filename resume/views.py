@@ -608,6 +608,8 @@ def delete_resume(request, id):
 # Profile
 # ===========================
 
+
+
 def profile(request):
 
     if "user_id" not in request.session:
@@ -615,30 +617,36 @@ def profile(request):
 
     user = Register.objects.get(id=request.session["user_id"])
 
+    print(user.profile_photo)
+    print(user.profile_photo.url if user.profile_photo else "NO PHOTO")
+
     resumes = Resume.objects.filter(user=user)
 
     total_resume = resumes.count()
 
     highest_score = 0
     latest_score = 0
+    average_score = 0
 
     if resumes.exists():
 
-        highest_score = max(r.ats_score for r in resumes)
+        highest_score = resumes.order_by("-ats_score").first().ats_score
 
         latest_score = resumes.order_by("-uploaded_at").first().ats_score
 
-    context = {
+        average_score = round(
+            resumes.aggregate(avg=Avg("ats_score"))["avg"] or 0
+        )
 
+    context = {
         "user": user,
         "total_resume": total_resume,
         "highest_score": highest_score,
         "latest_score": latest_score,
-
+        "average_score": average_score,
     }
 
     return render(request, "profile.html", context)
-
 # ===========================
 # Forgot Password
 # ===========================

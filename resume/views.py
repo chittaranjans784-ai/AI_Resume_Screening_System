@@ -811,6 +811,8 @@ def contact(request):
 # Edit Profile
 # ===========================
 
+
+
 def edit_profile(request):
 
     if "user_id" not in request.session:
@@ -818,21 +820,33 @@ def edit_profile(request):
 
     user = Register.objects.get(id=request.session["user_id"])
 
+    resumes = Resume.objects.filter(user=user)
+
+    total_resume = resumes.count()
+    highest_score = 0
+    average_score = 0
+
+    if resumes.exists():
+        highest_score = resumes.order_by("-ats_score").first().ats_score
+        average_score = round(
+            resumes.aggregate(avg=Avg("ats_score"))["avg"] or 0
+        )
+
     if request.method == "POST":
 
         fullname = request.POST.get("fullname")
         email = request.POST.get("email")
-
         profile_photo = request.FILES.get("profile_photo")
 
-        # Email check
         if Register.objects.filter(email=email).exclude(id=user.id).exists():
-            
-            messages.error(request, "Email already exists.")
 
+            messages.error(request, "Email already exists.")
 
             return render(request, "edit_profile.html", {
                 "user": user,
+                "total_resume": total_resume,
+                "highest_score": highest_score,
+                "average_score": average_score,
                 "error": "Email already exists."
             })
 
@@ -843,17 +857,19 @@ def edit_profile(request):
             user.profile_photo = profile_photo
 
         user.save()
-        messages.success(request, "Profile Updated Successfully.")
 
         request.session["user_name"] = user.fullname
+
+        messages.success(request, "Profile Updated Successfully.")
 
         return redirect("edit_profile")
 
     return render(request, "edit_profile.html", {
-        "user": user
+        "user": user,
+        "total_resume": total_resume,
+        "highest_score": highest_score,
+        "average_score": average_score,
     })
-    
-
 
 # ==========================================================
 # ADMIN DASHBOARD

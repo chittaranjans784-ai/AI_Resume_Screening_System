@@ -150,14 +150,18 @@ import cloudinary
 import cloudinary.uploader
 import cloudinary.api
 
-cloudinary.config(
-    cloud_name=os.environ.get("CLOUDINARY_CLOUD_NAME"),
-    api_key=os.environ.get("CLOUDINARY_API_KEY"),
-    api_secret=os.environ.get("CLOUDINARY_API_SECRET"),
-    secure=True,
-)
+if os.environ.get("RENDER"):
+    cloudinary.config(
+        cloud_name=os.environ.get("CLOUDINARY_CLOUD_NAME"),
+        api_key=os.environ.get("CLOUDINARY_API_KEY"),
+        api_secret=os.environ.get("CLOUDINARY_API_SECRET"),
+        secure=True,
+    )
 
-DEFAULT_FILE_STORAGE = "cloudinary_storage.storage.MediaCloudinaryStorage"
+if os.environ.get("RENDER"):
+    DEFAULT_FILE_STORAGE = "cloudinary_storage.storage.MediaCloudinaryStorage"
+else:
+    DEFAULT_FILE_STORAGE = "django.core.files.storage.FileSystemStorage"
 
 MESSAGE_TAGS = {
     messages.DEBUG: "secondary",

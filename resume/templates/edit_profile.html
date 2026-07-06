@@ -354,7 +354,11 @@ footer{
 
     <div class="logo">
 
-        <img src="{{ user.profile_photo.url }}" alt="Profile">
+        {% if user.profile_photo %}
+            <img src="{{ user.profile_photo.url }}" alt="Profile">
+        {% else %}
+            <img src="{% static 'images/default.png' %}" alt="Profile">
+        {% endif %}
 
         <h4>{{ user.fullname }}</h4>
 
@@ -453,7 +457,11 @@ footer{
 
 <div class="user-box">
 
-<img src="{{ user.profile_photo.url }}" alt="User">
+{% if user.profile_photo %}
+    <img src="{{ user.profile_photo.url }}" alt="User">
+{% else %}
+    <img src="{% static 'images/default.png' %}" alt="User">
+{% endif %}
 
 <div>
 

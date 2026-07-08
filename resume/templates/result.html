@@ -530,7 +530,8 @@
 
                                 {% if resume.skills_found %}
 
-                                    {{ resume.skills_found|length }}
+                                    {{ skills_found_list|length }}
+
 
                                 {% else %}
 
@@ -560,7 +561,7 @@
 
                                 {% if resume.missing_skills %}
 
-                                    {{ resume.missing_skills|length }}
+                                    {{ missing_skills_list|length }}
 
                                 {% else %}
 

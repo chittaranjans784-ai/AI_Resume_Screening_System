@@ -1,8 +1,5 @@
-
-
+import os
 import email
-from io import BytesIO
-from urllib import request
 
 from django.contrib.auth.hashers import make_password, check_password
 from django.shortcuts import render, redirect,get_object_or_404
@@ -206,50 +203,52 @@ def upload_resume(request):
             )
             return render(request, "upload_resume.html")
 
-        user = Register.objects.get(
-            id=request.session["user_id"]
-        )
-
-        resume = Resume.objects.create(
-            user=user,
-            resume=resume_file
-        )
+        # -------------------------
+        # Read PDF BEFORE Uploading
+        # -------------------------
 
         try:
 
-            resume.resume.open("rb")
+            resume_file.seek(0)
 
-            pdf_bytes = resume.resume.read()
-
-            reader = PdfReader(BytesIO(pdf_bytes))
-
-            resume.resume.close()
+            reader = PdfReader(resume_file)
 
             text = ""
 
             for page in reader.pages:
-                text += page.extract_text() or ""
+
+                extracted = page.extract_text()
+
+                if extracted:
+                    text += extracted
+
+            resume_file.seek(0)
 
         except Exception as e:
 
             print("PDF Error:", repr(e))
-            try:
-                resume.resume.close()
-            except Exception:
-                pass
-            if resume.resume:
-                resume.resume.delete(save=False)
-            resume.delete()
+
             messages.error(
                 request,
                 "Invalid or Corrupted PDF."
             )
+
             return render(
                 request,
                 "upload_resume.html"
             )
 
-        resume.extracted_text = text
+        # -------------------------
+        # User
+        # -------------------------
+
+        user = Register.objects.get(
+            id=request.session["user_id"]
+        )
+
+        # -------------------------
+        # ATS Analysis
+        # -------------------------
 
         lower_text = text.lower()
 
@@ -285,10 +284,6 @@ def upload_resume(request):
 
         score = min(score, 100)
 
-        resume.ats_score = score
-        resume.skills_found = ", ".join(skills_found)
-        resume.missing_skills = ", ".join(missing_skills)
-
         suggestions = []
 
         if "react" not in lower_text:
@@ -312,9 +307,19 @@ def upload_resume(request):
         if "certification" not in lower_text:
             suggestions.append("Add Certifications")
 
-        resume.ai_suggestion = ", ".join(suggestions)
+        # -------------------------
+        # Save Resume
+        # -------------------------
 
-        resume.save()
+        resume = Resume.objects.create(
+            user=user,
+            resume=resume_file,
+            extracted_text=text,
+            ats_score=score,
+            skills_found=", ".join(skills_found),
+            missing_skills=", ".join(missing_skills),
+            ai_suggestion=", ".join(suggestions),
+        )
 
         messages.success(
             request,
@@ -326,7 +331,10 @@ def upload_resume(request):
             id=resume.id
         )
 
-    return render(request, "upload_resume.html")
+    return render(
+        request,
+        "upload_resume.html"
+    )
 
 # ===========================
 # Dashboard

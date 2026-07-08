@@ -230,18 +230,20 @@ def upload_resume(request):
             for page in reader.pages:
                 text += page.extract_text() or ""
 
-        except Exception:
+        except Exception as e:
 
+            print("PDF Error:", repr(e))
+            try:
+                resume.resume.close()
+            except Exception:
+                pass
             if resume.resume:
                 resume.resume.delete(save=False)
-
             resume.delete()
-
             messages.error(
                 request,
                 "Invalid or Corrupted PDF."
             )
-
             return render(
                 request,
                 "upload_resume.html"

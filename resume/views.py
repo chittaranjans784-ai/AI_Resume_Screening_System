@@ -1,6 +1,7 @@
 
 
 import email
+from io import BytesIO
 from urllib import request
 
 from django.contrib.auth.hashers import make_password, check_password
@@ -10,6 +11,8 @@ from django.http import HttpResponse
 from django.contrib import messages
 from django.db.models import Avg, Max, Min, Count
 from django.db.models.functions import ExtractMonth
+
+import resume
 from .models import Register, Resume, Contact
 from django.core.paginator import Paginator
 from PyPDF2 import PdfReader
@@ -214,7 +217,13 @@ def upload_resume(request):
 
         try:
 
-            reader = PdfReader(resume.resume.path)
+            resume.resume.open("rb")
+
+            pdf_bytes = resume.resume.read()
+
+            reader = PdfReader(BytesIO(pdf_bytes))
+
+            resume.resume.close()
 
             text = ""
 

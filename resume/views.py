@@ -310,7 +310,7 @@ def upload_resume(request):
         # -------------------------
         # Save Resume
         # -------------------------
-
+        print("Before Resume Create")
         resume = Resume.objects.create(
             user=user,
             resume=resume_file,
@@ -320,12 +320,12 @@ def upload_resume(request):
             missing_skills=", ".join(missing_skills),
             ai_suggestion=", ".join(suggestions),
         )
-
         messages.success(
             request,
             "Resume Uploaded Successfully."
         )
-
+        print("Redirecting Result Page")
+        
         return redirect(
             "result",
             id=resume.id

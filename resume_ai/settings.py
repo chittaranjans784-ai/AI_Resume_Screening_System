@@ -28,11 +28,17 @@ SECRET_KEY = os.environ.get(
 )
 
 DEBUG = os.environ.get("DEBUG", "False") == "True"
-DEBUG = True
+# DEBUG = True
 # DEBUG = False
 
-ALLOWED_HOSTS = ["*"]
-
+ALLOWED_HOSTS = [
+    "127.0.0.1",
+    "localhost",
+    ".onrender.com",
+]
+CSRF_TRUSTED_ORIGINS = [
+    "https://*.onrender.com",
+]
 # Application definition
 
 INSTALLED_APPS = [
@@ -115,7 +121,7 @@ AUTH_PASSWORD_VALIDATORS = [
 
 LANGUAGE_CODE = 'en-us'
 
-TIME_ZONE = 'UTC'
+TIME_ZONE = "Asia/Kolkata"
 
 USE_I18N = True
 
@@ -160,6 +166,9 @@ if os.environ.get("RENDER"):
 
 if os.environ.get("RENDER"):
     DEFAULT_FILE_STORAGE = "cloudinary_storage.storage.MediaCloudinaryStorage"
+    SECURE_SSL_REDIRECT = True
+    SESSION_COOKIE_SECURE = True
+    CSRF_COOKIE_SECURE = True
 else:
     DEFAULT_FILE_STORAGE = "django.core.files.storage.FileSystemStorage"
 

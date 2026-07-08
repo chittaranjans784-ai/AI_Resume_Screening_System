@@ -124,6 +124,17 @@ path(
     views.toggle_admin,
     name="toggle_admin",
 ),
+path(
+    "admin-export-excel/",
+    views.admin_export_excel,
+    name="admin_export_excel",
+),
+
+path(
+    "admin-export-pdf/",
+    views.admin_export_pdf,
+    name="admin_export_pdf",
+),
 ]
 
 if settings.DEBUG:

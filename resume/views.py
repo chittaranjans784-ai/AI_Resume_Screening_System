@@ -1,6 +1,9 @@
 
 
+import email
+from urllib import request
 
+from django.contrib.auth.hashers import make_password, check_password
 from django.shortcuts import render, redirect,get_object_or_404
 from django.db.models import Q
 from django.http import HttpResponse
@@ -11,8 +14,11 @@ from .models import Register, Resume, Contact
 from django.core.paginator import Paginator
 from PyPDF2 import PdfReader
 from reportlab.pdfgen import canvas
+from reportlab.lib.units import inch
 from openpyxl import Workbook
 from django.utils import timezone
+from openpyxl.styles import Font, Alignment,PatternFill, Border, Side
+from openpyxl.utils import get_column_letter
 import csv
 
 # ===========================
@@ -35,46 +41,68 @@ def register(request):
 
     if request.method == "POST":
 
-        fullname = request.POST.get("fullName")
-        email = request.POST.get("email")
-        password = request.POST.get("password")
-        confirm_password = request.POST.get("confirm_password")
-
+        fullname = request.POST.get("fullName", "").strip()
+        email = request.POST.get("email", "").strip().lower()
+        password = request.POST.get("password", "")
+        confirm_password = request.POST.get("confirm_password", "")
         profile_photo = request.FILES.get("profile_photo")
+
+        # Full Name Validation
+        if not fullname:
+            messages.error(request, "Full Name is required.")
+            return render(request, "register.html")
+
+        # Email Validation
+        if not email:
+            messages.error(request, "Email is required.")
+            return render(request, "register.html")
+
+        # Password Validation
+        if not password:
+            messages.error(request, "Password is required.")
+            return render(request, "register.html")
+
+        if len(password) < 8:
+            messages.error(request, "Password must be at least 8 characters.")
+            return render(request, "register.html")
+
+        # Confirm Password
+        if password != confirm_password:
+            messages.error(request, "Password and Confirm Password do not match.")
+            return render(request, "register.html")
 
         # Email Already Exists
         if Register.objects.filter(email=email).exists():
-
             messages.error(request, "Email already registered.")
+            return render(request, "register.html")
 
-            return render(request, "register.html", {
-                "error": "Email already registered"
-            })
+        # Profile Photo Validation
+        if profile_photo:
 
-        # Password Check
-        if password != confirm_password:
+            allowed_extensions = ["jpg", "jpeg", "png"]
 
-            messages.error(request, "Password and Confirm Password do not match.")
+            extension = profile_photo.name.split(".")[-1].lower()
 
-            return render(request, "register.html", {
-                "error": "Password and Confirm Password do not match."
-            })
+            if extension not in allowed_extensions:
+                messages.error(
+                    request,
+                    "Only JPG, JPEG and PNG images are allowed."
+                )
+                return render(request, "register.html")
 
-        # Save User
+        # Create User
         Register.objects.create(
-
             fullname=fullname,
             email=email,
-            password=password,
+            password=make_password(password),
             profile_photo=profile_photo
-
         )
+
         messages.success(request, "Registration Successful.")
 
         return redirect("login")
 
     return render(request, "register.html")
-
 
 # ===========================
 # Login
@@ -92,19 +120,23 @@ def login(request):
 
     if request.method == "POST":
 
-        email = request.POST.get("email")
-        password = request.POST.get("password")
+        email = request.POST.get("email", "").strip().lower()
+        password = request.POST.get("password", "")
 
-        user = Register.objects.filter(
-            email=email,
-            password=password
-        ).first()
+        if not email or not password:
+            messages.error(request, "Email and Password are required.")
+            return render(request, "login.html")
+
+        user = Register.objects.filter(email=email).first()
 
         if not user:
             messages.error(request, "Invalid Email or Password.")
-            return render(request, "login.html", {
-                "error": "Invalid Email or Password."
-            })
+            return render(request, "login.html")
+
+        # Password Verification
+        if not check_password(password, user.password):
+            messages.error(request, "Invalid Email or Password.")
+            return render(request, "login.html")
 
         # Admin cannot login from User Login page
         if user.is_admin:
@@ -114,7 +146,7 @@ def login(request):
             )
             return redirect("admin_login")
 
-        # Normal User Login
+        # User Session
         request.session["user_id"] = user.id
         request.session["user_name"] = user.fullname
         request.session["is_admin"] = False
@@ -147,20 +179,33 @@ def upload_resume(request):
 
         resume_file = request.FILES.get("resume")
 
+        # File Required
         if not resume_file:
-            messages.warning(request, "Please select a resume file.")
-            return render(request, "upload_resume.html", {
-                "error": "Please select a resume file."
-            })
+            messages.error(
+                request,
+                "Please select a PDF resume."
+            )
+            return render(request, "upload_resume.html")
 
-        # PDF validation
+        # File Size Validation
+        if resume_file.size > 5 * 1024 * 1024:
+            messages.error(
+                request,
+                "Maximum file size is 5 MB."
+            )
+            return render(request, "upload_resume.html")
+
+        # PDF Validation
         if not resume_file.name.lower().endswith(".pdf"):
-            messages.error(request, "Only PDF files are allowed.")
-            return render(request, "upload_resume.html", {
-                "error": "Only PDF files are allowed."
-            })
+            messages.error(
+                request,
+                "Only PDF files are allowed."
+            )
+            return render(request, "upload_resume.html")
 
-        user = Register.objects.get(id=request.session["user_id"])
+        user = Register.objects.get(
+            id=request.session["user_id"]
+        )
 
         resume = Resume.objects.create(
             user=user,
@@ -168,6 +213,7 @@ def upload_resume(request):
         )
 
         try:
+
             reader = PdfReader(resume.resume.path)
 
             text = ""
@@ -182,11 +228,15 @@ def upload_resume(request):
 
             resume.delete()
 
-            messages.error(request, "Invalid or corrupted PDF file.")
+            messages.error(
+                request,
+                "Invalid or Corrupted PDF."
+            )
 
-            return render(request, "upload_resume.html", {
-                "error": "Invalid or corrupted PDF file."
-            })
+            return render(
+                request,
+                "upload_resume.html"
+            )
 
         resume.extracted_text = text
 
@@ -211,6 +261,7 @@ def upload_resume(request):
 
         skills_found = []
         missing_skills = []
+
         score = 0
 
         for skill in keywords:
@@ -254,9 +305,15 @@ def upload_resume(request):
 
         resume.save()
 
-        messages.success(request, "Resume Uploaded Successfully.")
+        messages.success(
+            request,
+            "Resume Uploaded Successfully."
+        )
 
-        return redirect("result", id=resume.id)
+        return redirect(
+            "result",
+            id=resume.id
+        )
 
     return render(request, "upload_resume.html")
 
@@ -351,7 +408,8 @@ def result(request, id):
         return redirect("history")
 
     return render(request, "result.html", {
-        "resume": resume
+        "resume": resume,
+        "user": user,
     })
 
 
@@ -393,8 +451,9 @@ def history(request):
 
     return render(request, "history.html", context)
 
+
 # ==========================================
-# Export CSV
+# Export CSV (Professional)
 # ==========================================
 
 def export_csv(request):
@@ -404,17 +463,30 @@ def export_csv(request):
 
     user_id = request.session["user_id"]
 
-    resumes = Resume.objects.filter(
-        user_id=user_id
-    ).order_by("-uploaded_at")
+    resumes = (
+        Resume.objects
+        .filter(user_id=user_id)
+        .order_by("-uploaded_at")
+    )
 
-    response = HttpResponse(content_type="text/csv")
+    response = HttpResponse(
+        content_type="text/csv; charset=utf-8"
+    )
 
     response["Content-Disposition"] = (
         'attachment; filename="resume_history.csv"'
     )
 
-    writer = csv.writer(response)
+    # Excel UTF-8 Support
+    response.write("\ufeff")
+
+    writer = csv.writer(
+        response,
+        delimiter=",",
+        quotechar='"',
+        quoting=csv.QUOTE_MINIMAL,
+        lineterminator="\n"
+    )
 
     writer.writerow([
         "Resume",
@@ -422,32 +494,36 @@ def export_csv(request):
         "ATS Score",
         "Skills Found",
         "Missing Skills",
-        "AI Suggestion"
+        "AI Suggestion",
     ])
 
     for resume in resumes:
 
+        resume_name = ""
+
+        if resume.resume:
+            resume_name = resume.resume.name.split("/")[-1]
+
         writer.writerow([
 
-            str(resume.resume),
+            resume_name,
 
-            resume.uploaded_at.strftime("%d-%m-%Y %I:%M %p"),
+            resume.uploaded_at.strftime("%d-%m-%Y %I:%M %p")
+            if resume.uploaded_at else "-",
 
-            resume.ats_score,
+            f"{resume.ats_score}%",
 
-            resume.skills_found,
+            resume.skills_found or "-",
 
-            resume.missing_skills,
+            resume.missing_skills or "-",
 
-            resume.ai_suggestion
+            resume.ai_suggestion or "-",
 
         ])
 
     return response
-
-
 # ==========================================
-# Export Excel
+# Export Excel (Professional)
 # ==========================================
 
 def export_excel(request):
@@ -461,51 +537,126 @@ def export_excel(request):
         user_id=user_id
     ).order_by("-uploaded_at")
 
-    workbook = Workbook()
+    
 
-    sheet = workbook.active
-
-    sheet.title = "Resume History"
+    wb = Workbook()
+    ws = wb.active
+    ws.title = "Resume History"
 
     headers = [
-
         "Resume",
-
         "Upload Date",
-
         "ATS Score",
-
         "Skills Found",
-
         "Missing Skills",
-
-        "AI Suggestion"
-
+        "AI Suggestion",
     ]
 
-    for column, header in enumerate(headers, start=1):
+    header_fill = PatternFill(
+        fill_type="solid",
+        fgColor="2563EB"
+    )
 
-        sheet.cell(row=1, column=column).value = header
+    header_font = Font(
+        bold=True,
+        color="FFFFFF",
+        size=12
+    )
+
+    thin = Side(
+        border_style="thin",
+        color="CCCCCC"
+    )
+
+    border = Border(
+        left=thin,
+        right=thin,
+        top=thin,
+        bottom=thin
+    )
+
+    for col, header in enumerate(headers, 1):
+
+        cell = ws.cell(row=1, column=col)
+
+        cell.value = header
+
+        cell.fill = header_fill
+
+        cell.font = header_font
+
+        cell.border = border
+
+        cell.alignment = Alignment(
+            horizontal="center",
+            vertical="center",
+            wrap_text=True
+        )
 
     row = 2
 
     for resume in resumes:
 
-        sheet.cell(row=row, column=1).value = str(resume.resume)
+        ws.cell(row=row, column=1).value = resume.resume.name
 
-        sheet.cell(row=row, column=2).value = resume.uploaded_at.strftime(
-            "%d-%m-%Y %I:%M %p"
+        ws.cell(row=row, column=2).value = (
+            resume.uploaded_at.strftime("%d-%m-%Y %I:%M %p")
+            if resume.uploaded_at else ""
         )
 
-        sheet.cell(row=row, column=3).value = resume.ats_score
+        ws.cell(row=row, column=3).value = f"{resume.ats_score}%"
 
-        sheet.cell(row=row, column=4).value = resume.skills_found
+        ws.cell(row=row, column=4).value = resume.skills_found or "-"
 
-        sheet.cell(row=row, column=5).value = resume.missing_skills
+        ws.cell(row=row, column=5).value = resume.missing_skills or "-"
 
-        sheet.cell(row=row, column=6).value = resume.ai_suggestion
+        ws.cell(row=row, column=6).value = resume.ai_suggestion or "-"
+
+        for col in range(1, 7):
+
+            c = ws.cell(row=row, column=col)
+
+            c.border = border
+
+            c.alignment = Alignment(
+                vertical="top",
+                wrap_text=True
+            )
 
         row += 1
+
+    ws.freeze_panes = "A2"
+
+    ws.auto_filter.ref = ws.dimensions
+
+    for column_cells in ws.columns:
+
+        length = 0
+
+        letter = get_column_letter(column_cells[0].column)
+
+        for cell in column_cells:
+
+            try:
+
+                if cell.value:
+
+                    length = max(
+                        length,
+                        len(str(cell.value))
+                    )
+
+            except:
+
+                pass
+
+        ws.column_dimensions[letter].width = min(length + 5, 60)
+
+    ws.row_dimensions[1].height = 25
+
+    wb.properties.creator = "AI Resume Screening System"
+
+    wb.properties.title = "Resume History"
 
     response = HttpResponse(
         content_type="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
@@ -515,10 +666,9 @@ def export_excel(request):
         'attachment; filename="resume_history.xlsx"'
     )
 
-    workbook.save(response)
+    wb.save(response)
 
     return response
-
 # ===========================
 # Download Report
 # ===========================
@@ -608,17 +758,12 @@ def delete_resume(request, id):
 # Profile
 # ===========================
 
-
-
 def profile(request):
 
     if "user_id" not in request.session:
         return redirect("login")
 
     user = Register.objects.get(id=request.session["user_id"])
-
-    print(user.profile_photo)
-    print(user.profile_photo.url if user.profile_photo else "NO PHOTO")
 
     resumes = Resume.objects.filter(user=user)
 
@@ -630,23 +775,39 @@ def profile(request):
 
     if resumes.exists():
 
-        highest_score = resumes.order_by("-ats_score").first().ats_score
+        highest_score = resumes.order_by(
+            "-ats_score"
+        ).first().ats_score
 
-        latest_score = resumes.order_by("-uploaded_at").first().ats_score
+        latest_score = resumes.order_by(
+            "-uploaded_at"
+        ).first().ats_score
 
         average_score = round(
-            resumes.aggregate(avg=Avg("ats_score"))["avg"] or 0
+            resumes.aggregate(
+                avg=Avg("ats_score")
+            )["avg"] or 0
         )
 
     context = {
+
         "user": user,
+
         "total_resume": total_resume,
+
         "highest_score": highest_score,
+
         "latest_score": latest_score,
+
         "average_score": average_score,
+
     }
 
-    return render(request, "profile.html", context)
+    return render(
+        request,
+        "profile.html",
+        context
+    )
 # ===========================
 # Forgot Password
 # ===========================
@@ -689,27 +850,66 @@ def change_password(request):
 
     if request.method == "POST":
 
-        password = request.POST.get("password")
-        confirm = request.POST.get("confirm_password")
+        password = request.POST.get(
+            "password",
+            ""
+        )
+
+        confirm = request.POST.get(
+            "confirm_password",
+            ""
+        )
+
+        if not password:
+            messages.error(
+                request,
+                "Password is required."
+            )
+            return render(
+                request,
+                "change_password.html"
+            )
+
+        if len(password) < 8:
+            messages.error(
+                request,
+                "Password must be at least 8 characters."
+            )
+            return render(
+                request,
+                "change_password.html"
+            )
 
         if password != confirm:
-            
-            messages.error(request, "Passwords do not match.")
+            messages.error(
+                request,
+                "Passwords do not match."
+            )
+            return render(
+                request,
+                "change_password.html"
+            )
 
-            return render(request, "change_password.html", {
-                "error": "Passwords do not match."
-            })
+        user.password = make_password(password)
 
-        user.password = password
         user.save()
-        messages.success(request, "Password Changed Successfully.")
 
-        del request.session["reset_user_id"]
+        request.session.pop(
+            "reset_user_id",
+            None
+        )
+
+        messages.success(
+            request,
+            "Password Changed Successfully."
+        )
 
         return redirect("login")
 
-    return render(request, "change_password.html")
-
+    return render(
+        request,
+        "change_password.html"
+    )
 # ===========================
 # Analytics
 # ===========================
@@ -783,29 +983,88 @@ def contact(request):
     if "user_id" not in request.session:
         return redirect("login")
 
-    user = Register.objects.get(id=request.session["user_id"])
+    user = Register.objects.get(
+        id=request.session["user_id"]
+    )
 
     if request.method == "POST":
 
-        name = request.POST.get("name")
-        email = request.POST.get("email")
-        subject = request.POST.get("subject")
-        message = request.POST.get("message")
+        name = request.POST.get(
+            "name",
+            ""
+        ).strip()
+
+        email = request.POST.get(
+            "email",
+            ""
+        ).strip()
+
+        subject = request.POST.get(
+            "subject",
+            ""
+        ).strip()
+
+        message = request.POST.get(
+            "message",
+            ""
+        ).strip()
+
+        if not name:
+            messages.error(
+                request,
+                "Name is required."
+            )
+            return redirect("contact")
+
+        if not email:
+            messages.error(
+                request,
+                "Email is required."
+            )
+            return redirect("contact")
+
+        if not subject:
+            messages.error(
+                request,
+                "Subject is required."
+            )
+            return redirect("contact")
+
+        if not message:
+            messages.error(
+                request,
+                "Message is required."
+            )
+            return redirect("contact")
 
         Contact.objects.create(
+
             user=user,
+
             name=name,
+
             email=email,
+
             subject=subject,
-            message=message
+
+            message=message,
+
         )
-        messages.success(request, "Message Sent Successfully.")
+
+        messages.success(
+            request,
+            "Message Sent Successfully."
+        )
 
         return redirect("contact")
 
-    return render(request, "contact.html", {
-        "user": user
-    })
+    return render(
+        request,
+        "contact.html",
+        {
+            "user": user
+        }
+    )
     
     # ===========================
 # Edit Profile
@@ -823,32 +1082,63 @@ def edit_profile(request):
     resumes = Resume.objects.filter(user=user)
 
     total_resume = resumes.count()
+
     highest_score = 0
     average_score = 0
 
     if resumes.exists():
-        highest_score = resumes.order_by("-ats_score").first().ats_score
+
+        highest_score = resumes.order_by(
+            "-ats_score"
+        ).first().ats_score
+
         average_score = round(
-            resumes.aggregate(avg=Avg("ats_score"))["avg"] or 0
+            resumes.aggregate(
+                avg=Avg("ats_score")
+            )["avg"] or 0
         )
 
     if request.method == "POST":
 
-        fullname = request.POST.get("fullname")
-        email = request.POST.get("email")
+        fullname = request.POST.get("fullname", "").strip()
+        email = request.POST.get("email", "").strip().lower()
+
         profile_photo = request.FILES.get("profile_photo")
 
-        if Register.objects.filter(email=email).exclude(id=user.id).exists():
+        if profile_photo:
 
-            messages.error(request, "Email already exists.")
+            allowed = ["jpg", "jpeg", "png"]
 
-            return render(request, "edit_profile.html", {
-                "user": user,
-                "total_resume": total_resume,
-                "highest_score": highest_score,
-                "average_score": average_score,
-                "error": "Email already exists."
-            })
+            ext = profile_photo.name.split(".")[-1].lower()
+
+            if ext not in allowed:
+
+                messages.error(
+                    request,
+                    "Only JPG, JPEG and PNG images are allowed."
+                )
+
+                return redirect("edit_profile")
+
+        if Register.objects.filter(
+            email=email
+        ).exclude(id=user.id).exists():
+
+            messages.error(
+                request,
+                "Email already exists."
+            )
+
+            return render(
+                request,
+                "edit_profile.html",
+                {
+                    "user": user,
+                    "total_resume": total_resume,
+                    "highest_score": highest_score,
+                    "average_score": average_score,
+                }
+            )
 
         user.fullname = fullname
         user.email = email
@@ -860,16 +1150,23 @@ def edit_profile(request):
 
         request.session["user_name"] = user.fullname
 
-        messages.success(request, "Profile Updated Successfully.")
+        messages.success(
+            request,
+            "Profile Updated Successfully."
+        )
 
         return redirect("edit_profile")
 
-    return render(request, "edit_profile.html", {
-        "user": user,
-        "total_resume": total_resume,
-        "highest_score": highest_score,
-        "average_score": average_score,
-    })
+    return render(
+        request,
+        "edit_profile.html",
+        {
+            "user": user,
+            "total_resume": total_resume,
+            "highest_score": highest_score,
+            "average_score": average_score,
+        }
+    )
 
 # ==========================================================
 # ADMIN DASHBOARD
@@ -1039,6 +1336,9 @@ def admin_dashboard(request):
         "Sep", "Oct", "Nov", "Dec"
 
     ]
+        for item in monthly_uploads:
+
+            month_data[item["month"]] = item["total"]
 
     month_values = [
 
@@ -1588,7 +1888,7 @@ def admin_analytics(request):
     top_users = (
         Register.objects.filter(is_admin=False)
         .annotate(
-            resume_count=Count("resume")
+            resume_count=Count("resumes")
         )
         .order_by("-resume_count")[:10]
     )
@@ -1713,64 +2013,41 @@ def admin_analytics(request):
 
 def admin_login(request):
 
+    # Already Logged In
     if request.session.get("is_admin"):
         return redirect("admin_dashboard")
 
     if request.method == "POST":
 
-        email = request.POST.get("email")
+        email = request.POST.get("email", "").strip().lower()
+        password = request.POST.get("password", "")
 
-        password = request.POST.get("password")
-        
-        print("EMAIL =", email)
-        print("PASSWORD =", password)
+        if not email or not password:
+            messages.error(request, "Email and Password are required.")
+            return render(request, "admin/admin_login.html")
 
         admin = Register.objects.filter(
-
             email=email,
-
-            password=password,
-
             is_admin=True
-
         ).first()
-        
-        print("ADMIN =", admin)  
 
-        if admin:
+        if not admin:
+            messages.error(request, "Invalid Admin Email or Password.")
+            return render(request, "admin/admin_login.html")
 
-            request.session["user_id"] = admin.id
+        if not check_password(password, admin.password):
+            messages.error(request, "Invalid Admin Email or Password.")
+            return render(request, "admin/admin_login.html")
 
-            request.session["user_name"] = admin.fullname
+        request.session["user_id"] = admin.id
+        request.session["user_name"] = admin.fullname
+        request.session["is_admin"] = True
 
-            request.session["is_admin"] = True
-            messages.success(request, "Admin Login Successful.")
+        messages.success(request, "Admin Login Successful.")
 
+        return redirect("admin_dashboard")
 
-            return redirect("admin_dashboard")
-
-        messages.error(request, "Invalid Admin Email or Password.")
-        return render(
-
-            request,
-
-            "admin/admin_login.html",
-
-            {
-
-                "error": "Invalid Admin Email or Password"
-
-            }
-
-        )
-
-    return render(
-
-        request,
-
-        "admin/admin_login.html"
-
-    )
+    return render(request, "admin/admin_login.html")
     
 # =====================================================
 # ADMIN LOGOUT
@@ -1944,6 +2221,170 @@ def toggle_admin(request, id):
         )
 
     return redirect("manage_users")
+
+
+def admin_export_excel(request):
+
+    if "user_id" not in request.session or not request.session.get("is_admin"):
+        return redirect("admin_login")
+
+    resumes = Resume.objects.select_related("user").all().order_by("-uploaded_at")
+
+    search = request.GET.get("search", "").strip()
+    score = request.GET.get("score", "").strip()
+
+    if search:
+        resumes = resumes.filter(
+            Q(user__fullname__icontains=search) |
+            Q(user__email__icontains=search) |
+            Q(skills_found__icontains=search) |
+            Q(missing_skills__icontains=search) |
+            Q(ai_suggestion__icontains=search)
+        )
+
+    if score:
+        try:
+            resumes = resumes.filter(ats_score=int(score))
+        except ValueError:
+            pass
+
+    wb = Workbook()
+    ws = wb.active
+    ws.title = "Manage Resume"
+
+    headers = [
+        "ID",
+        "Candidate Name",
+        "Email",
+        "Resume",
+        "Upload Date",
+        "ATS Score",
+        "Skills Found",
+        "Missing Skills",
+        "AI Suggestion",
+    ]
+
+    for col_num, header in enumerate(headers, 1):
+        cell = ws.cell(row=1, column=col_num)
+        cell.value = header
+        cell.font = Font(bold=True)
+        cell.alignment = Alignment(horizontal="center", vertical="center")
+
+    row = 2
+
+    for resume in resumes:
+
+        ws.cell(row=row, column=1).value = resume.id
+        ws.cell(row=row, column=2).value = resume.user.fullname
+        ws.cell(row=row, column=3).value = resume.user.email
+        ws.cell(row=row, column=4).value = resume.resume.name
+        ws.cell(row=row, column=5).value = resume.uploaded_at.strftime("%d-%m-%Y %I:%M %p")
+        ws.cell(row=row, column=6).value = f"{resume.ats_score}%"
+        ws.cell(row=row, column=7).value = resume.skills_found or ""
+        ws.cell(row=row, column=8).value = resume.missing_skills or ""
+        ws.cell(row=row, column=9).value = resume.ai_suggestion or ""
+
+        row += 1
+
+    # Auto Width
+    for column_cells in ws.columns:
+        max_length = 0
+
+        column = get_column_letter(column_cells[0].column)
+
+        for cell in column_cells:
+            try:
+                if cell.value:
+                    max_length = max(max_length, len(str(cell.value)))
+            except Exception:
+                pass
+
+        ws.column_dimensions[column].width = max_length + 5
+
+    response = HttpResponse(
+        content_type="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+    )
+
+    response["Content-Disposition"] = (
+        'attachment; filename="admin_resume_report.xlsx"'
+    )
+
+    wb.save(response)
+
+    return response
+
+def admin_export_pdf(request):
+
+    if "user_id" not in request.session or not request.session.get("is_admin"):
+        return redirect("admin_login")
+
+    resumes = Resume.objects.select_related("user").all().order_by("-uploaded_at")
+
+    search = request.GET.get("search", "").strip()
+    score = request.GET.get("score", "").strip()
+
+    if search:
+        resumes = resumes.filter(
+            Q(user__fullname__icontains=search) |
+            Q(user__email__icontains=search) |
+            Q(skills_found__icontains=search) |
+            Q(missing_skills__icontains=search) |
+            Q(ai_suggestion__icontains=search)
+        )
+
+    if score:
+        try:
+            resumes = resumes.filter(ats_score=int(score))
+        except ValueError:
+            pass
+
+    response = HttpResponse(
+        content_type="application/pdf"
+    )
+
+    response["Content-Disposition"] = (
+        'attachment; filename="admin_resume_report.pdf"'
+    )
+
+    pdf = canvas.Canvas(response)
+
+    text = pdf.beginText()
+
+    text.setTextOrigin(40, 800)
+
+    text.setFont("Helvetica-Bold", 16)
+    text.textLine("AI Resume Screening System")
+    text.textLine("Admin Resume Report")
+    text.textLine("")
+
+    text.setFont("Helvetica", 10)
+
+    for resume in resumes:
+
+        text.textLine(f"Resume ID : {resume.id}")
+        text.textLine(f"Candidate : {resume.user.fullname}")
+        text.textLine(f"Email     : {resume.user.email}")
+        text.textLine(f"Resume    : {resume.resume.name}")
+        text.textLine(
+            f"Uploaded  : {resume.uploaded_at.strftime('%d-%m-%Y %I:%M %p')}"
+        )
+        text.textLine(f"ATS Score : {resume.ats_score}%")
+        text.textLine(f"Skills    : {resume.skills_found or '-'}")
+        text.textLine(f"Missing   : {resume.missing_skills or '-'}")
+        text.textLine(f"Suggestion: {resume.ai_suggestion or '-'}")
+        text.textLine("-" * 100)
+
+        if text.getY() < 80:
+            pdf.drawText(text)
+            pdf.showPage()
+            text = pdf.beginText()
+            text.setTextOrigin(40, 800)
+            text.setFont("Helvetica", 10)
+
+    pdf.drawText(text)
+    pdf.save()
+
+    return response
 
 def error_404(request, exception):
     return render(request, "404.html", status=404)

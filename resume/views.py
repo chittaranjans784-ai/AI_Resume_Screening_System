@@ -1,6 +1,7 @@
 import os
 import email
 import traceback
+from django.conf import settings
 
 from django.contrib.auth.hashers import make_password, check_password
 from django.shortcuts import render, redirect,get_object_or_404
@@ -327,7 +328,10 @@ def upload_resume(request):
                 missing_skills=", ".join(missing_skills),
                 ai_suggestion=", ".join(suggestions),
             )
-
+            print("URL =", resume.resume.url)
+            print("NAME =", resume.resume.name)
+            print("CLASS =", resume.resume.storage.__class__)
+            print("STORAGE =", settings.DEFAULT_FILE_STORAGE)
             print("Resume Saved Successfully")
 
         except Exception as e:

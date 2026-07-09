@@ -1,5 +1,6 @@
 import os
 import email
+import traceback
 
 from django.contrib.auth.hashers import make_password, check_password
 from django.shortcuts import render, redirect,get_object_or_404
@@ -310,22 +311,40 @@ def upload_resume(request):
         # -------------------------
         # Save Resume
         # -------------------------
-        print("Before Resume Create")
-        resume = Resume.objects.create(
-            user=user,
-            resume=resume_file,
-            extracted_text=text,
-            ats_score=score,
-            skills_found=", ".join(skills_found),
-            missing_skills=", ".join(missing_skills),
-            ai_suggestion=", ".join(suggestions),
-        )
+
+        
+
+        try:
+
+            print("Before Resume Create")
+
+            resume = Resume.objects.create(
+                user=user,
+                resume=resume_file,
+                extracted_text=text,
+                ats_score=score,
+                skills_found=", ".join(skills_found),
+                missing_skills=", ".join(missing_skills),
+                ai_suggestion=", ".join(suggestions),
+            )
+
+            print("Resume Saved Successfully")
+
+        except Exception as e:
+
+            print("===== DATABASE ERROR =====")
+            print(str(e))
+            print(traceback.format_exc())
+
+            raise
+
         messages.success(
             request,
             "Resume Uploaded Successfully."
         )
+
         print("Redirecting Result Page")
-        
+
         return redirect(
             "result",
             id=resume.id
@@ -335,7 +354,6 @@ def upload_resume(request):
         request,
         "upload_resume.html"
     )
-
 # ===========================
 # Dashboard
 # ===========================

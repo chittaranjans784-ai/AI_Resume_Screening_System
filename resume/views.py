@@ -13,6 +13,7 @@ from django.db.models import Avg, Max, Min, Count
 from django.db.models.functions import ExtractMonth
 
 import resume
+from resume import admin
 from .models import Register, Resume, Contact
 from django.core.paginator import Paginator
 from PyPDF2 import PdfReader
@@ -98,12 +99,14 @@ def register(request):
                 return render(request, "register.html")
 
         # Create User
+        print("BEFORE CREATE")
         Register.objects.create(
             fullname=fullname,
             email=email,
             password=make_password(password),
             profile_photo=profile_photo
         )
+        print("USER CREATED")
 
         messages.success(request, "Registration Successful.")
 
@@ -138,10 +141,19 @@ def login(request):
             return render(request, "login.html")
 
         user = Register.objects.filter(email=email).first()
-
+        
+        print("USER =", user)
         if not user:
+            print("USER NOT FOUND")
+            print("EMAIL =", email)
+
+
+        
             messages.error(request, "Invalid Email or Password.")
             return render(request, "login.html")
+        print("DB PASSWORD =", user.password)
+        print("CHECK =", check_password(password, user.password))
+
 
         # Password Verification
         if not check_password(password, user.password):
@@ -2079,10 +2091,19 @@ def admin_login(request):
             email=email,
             is_admin=True
         ).first()
+        
+        print("ADMIN =", admin)
 
         if not admin:
+            print("ADMIN NOT FOUND")
+            print("EMAIL =", email)
+            
+            
             messages.error(request, "Invalid Admin Email or Password.")
             return render(request, "admin/admin_login.html")
+        
+        print("ADMIN PASSWORD =", admin.password)
+        print("CHECK =", check_password(password, admin.password))
 
         if not check_password(password, admin.password):
             messages.error(request, "Invalid Admin Email or Password.")

@@ -1,6 +1,7 @@
 import os
 import email
 import traceback
+from urllib import request
 from django.conf import settings
 
 from django.contrib.auth.hashers import make_password, check_password
@@ -42,6 +43,10 @@ def home(request):
 def register(request):
 
     if request.method == "POST":
+        
+        print("REGISTER POST")
+        print(request.POST)
+        print(request.FILES)
 
         fullname = request.POST.get("fullName", "").strip()
         email = request.POST.get("email", "").strip().lower()
@@ -121,6 +126,9 @@ def login(request):
         return redirect("admin_dashboard")
 
     if request.method == "POST":
+        
+        print("LOGIN POST")
+        print(request.POST)
 
         email = request.POST.get("email", "").strip().lower()
         password = request.POST.get("password", "")

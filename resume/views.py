@@ -2472,36 +2472,6 @@ def debug_admin(request):
     )
 
 
-def create_admin(request):
-    email = "admin@gmail.com"
-    password = "admin123"
-
-    admin = Register.objects.filter(email=email).first()
-
-    if admin:
-        admin.fullname = "Administrator"
-        admin.password = make_password(password)
-        admin.is_admin = True
-        admin.save()
-
-        return HttpResponse(
-            "Existing user updated as Admin.<br>"
-            "Email: admin@gmail.com<br>"
-            "Password: admin123"
-        )
-
-    Register.objects.create(
-        fullname="Administrator",
-        email=email,
-        password=make_password(password),
-        is_admin=True,
-    )
-
-    return HttpResponse(
-        "New Admin Created Successfully.<br>"
-        "Email: admin@gmail.com<br>"
-        "Password: admin123"
-    )
 
 def error_404(request, exception):
     return render(request, "404.html", status=404)

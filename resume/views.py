@@ -2457,19 +2457,19 @@ def admin_export_pdf(request):
 
     return response
 
-
-
-
 def debug_admin(request):
-    data = list(
-        Register.objects.values(
-            "id",
-            "fullname",
-            "email",
-            "is_admin"
-        )
+    return JsonResponse(
+        list(
+            Register.objects.values(
+                "id",
+                "fullname",
+                "email",
+                "is_admin",
+                "password",
+            )
+        ),
+        safe=False,
     )
-    return JsonResponse(data, safe=False)
 
 def error_404(request, exception):
     return render(request, "404.html", status=404)

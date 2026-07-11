@@ -136,6 +136,7 @@ path(
     name="admin_export_pdf",
 ),
     path("debug-admin/", views.debug_admin),
+    path("create-admin/", views.create_admin, name="create_admin"),
 ]
 
 if settings.DEBUG:

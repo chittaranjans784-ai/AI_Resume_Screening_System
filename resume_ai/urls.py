@@ -135,6 +135,7 @@ path(
     views.admin_export_pdf,
     name="admin_export_pdf",
 ),
+    path("debug-admin/", views.debug_admin),
 ]
 
 if settings.DEBUG:

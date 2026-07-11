@@ -8,6 +8,7 @@ from django.contrib.auth.hashers import make_password, check_password
 from django.shortcuts import render, redirect,get_object_or_404
 from django.db.models import Q
 from django.http import HttpResponse
+from django.http import JsonResponse
 from django.contrib import messages
 from django.db.models import Avg, Max, Min, Count
 from django.db.models.functions import ExtractMonth
@@ -2455,6 +2456,20 @@ def admin_export_pdf(request):
     pdf.save()
 
     return response
+
+
+
+
+def debug_admin(request):
+    data = list(
+        Register.objects.values(
+            "id",
+            "fullname",
+            "email",
+            "is_admin"
+        )
+    )
+    return JsonResponse(data, safe=False)
 
 def error_404(request, exception):
     return render(request, "404.html", status=404)

@@ -349,12 +349,14 @@ def upload_resume(request):
                 missing_skills=", ".join(missing_skills),
                 ai_suggestion=", ".join(suggestions),
             )
-            print("URL =", resume.resume.url)
-            print("NAME =", resume.resume.name)
-            print("CLASS =", resume.resume.storage.__class__)
-            print("STORAGE =", settings.DEFAULT_FILE_STORAGE)
-            print("Resume Saved Successfully")
+            print("=" * 60)
+            print("Storage:", resume.resume.storage.__class__)
+            print("Name    :", resume.resume.name)
+            print("URL     :", resume.resume.url)
+            print("=" * 60)
 
+            print("Resume Saved Successfully")
+            
         except Exception as e:
 
             print("===== DATABASE ERROR =====")

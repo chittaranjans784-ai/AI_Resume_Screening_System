@@ -268,7 +268,7 @@ def upload_resume(request):
         user = Register.objects.get(
             id=request.session["user_id"]
         )
-
+        text = text.replace("\x00", "")
         # -------------------------
         # ATS Analysis
         # -------------------------
